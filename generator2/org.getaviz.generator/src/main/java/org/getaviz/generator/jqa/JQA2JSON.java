@@ -283,7 +283,21 @@ public class JQA2JSON implements Step {
 				"\"belongsTo\":     \"" + belongsTo + "\"" +
 				"\n";
 	}
-
+	
+	private String getCoverage(String fqn) {
+		String s = "";
+		StatementResult result = connector.executeRead("MATCH (n:Coverage)<-[:HAS_COVERAGE]-(m {fqn: '"+fqn+"'}) RETURN n");
+		if(result.hasNext()){
+			Node node = result.single().get("n").asNode();
+			if(node.containsKey("statementCoverage"))  s += "\"statementCoverage\": "+node.get("statementCoverage")+",\n";
+			if(node.containsKey("branchCoverage"))     s += "\"branchCoverage\": "+node.get("branchCoverage")+",\n";
+			if(node.containsKey("lineCoverage"))       s += "\"lineCoverage\": "+node.get("lineCoverage")+",\n";
+			if(node.containsKey("complexityCoverage")) s += "\"complexityCoverage\": "+node.get("complexityCoverage")+",\n";
+			if(node.containsKey("methodCoverage"))     s += "\"methodCoverage\": "+node.get("methodCoverage")+"\n";
+		}
+		return s;
+	}
+	
 	private String getSuperClasses(Node element) {
 		ArrayList<String> tmp = new ArrayList<>();
 		connector.executeRead("MATCH (super:Type)<-[:EXTENDS]-(element) WHERE ID(element) = " + element.id() + " RETURN super").forEachRemaining((result) -> {
