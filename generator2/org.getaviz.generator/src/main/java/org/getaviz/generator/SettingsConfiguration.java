@@ -79,7 +79,7 @@ public class SettingsConfiguration {
 		for(int i = 0; i < fileArray.length; i++) {
 			String path = fileArray[i];
 			if(!path.startsWith("http") && !path.startsWith("https")) {
-				path = "file:" + Objects.requireNonNull(classLoader.getResource(path)).getPath();
+				path = "file:///var/lib/jetty/input/" + fileArray[i];// Objects.requireNonNull(classLoader.getResource(path)).getPath();
 				try {
 					path = URLDecoder.decode(path, "UTF-8");
 				} catch (UnsupportedEncodingException e) {
