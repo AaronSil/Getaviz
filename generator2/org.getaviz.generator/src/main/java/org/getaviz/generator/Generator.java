@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.getaviz.generator.jqa.CEnhancement;
 import org.getaviz.generator.jqa.JavaEnhancement;
+import org.getaviz.generator.jqa.TestCoverage;
 import java.util.List;
 
 public class Generator {
@@ -24,6 +25,8 @@ public class Generator {
 		java.run();
 		CEnhancement c = new CEnhancement(config,languages);
 		c.run();
+		TestCoverage tc = new TestCoverage(config);
+		tc.run();
 		metaphor.generate();
 		log.info("Generator finished");
 	}
