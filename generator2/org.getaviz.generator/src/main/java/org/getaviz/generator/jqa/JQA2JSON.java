@@ -24,12 +24,12 @@ public class JQA2JSON implements Step {
 	private Log log = LogFactory.getLog(this.getClass());
 	private DatabaseConnector connector = DatabaseConnector.getInstance();
 	private List<ProgrammingLanguage> languages;
-
+	
 	public JQA2JSON(SettingsConfiguration config, List<ProgrammingLanguage> languages) {
 		this.config = config;
 		this.languages = languages;
 	}
-
+	
 	public void run() {
 		log.info("JQA2JSON has started.");
 		ArrayList<Node> elements = new ArrayList<>();
@@ -53,12 +53,12 @@ public class JQA2JSON implements Step {
 		}
 		log.info("JQA2JSON has finished.");
 	}
-
+	
 	@Override
 	public boolean checkRequirements() {
 		return languages.contains(ProgrammingLanguage.JAVA);
 	}
-
+	
 	private String toJSON(List<Node> list) {
 		StringBuilder builder = new StringBuilder();
 		boolean hasElements = false;
@@ -102,7 +102,7 @@ public class JQA2JSON implements Step {
 		}
 		return builder.toString();
 	}
-
+	
 	private String toMetaDataNamespace(Node namespace) {
 		StatementResult parentHash = connector
 				.executeRead("MATCH (parent:Package)-[:CONTAINS]->(namespace) WHERE ID(namespace) = " + namespace.id()
@@ -122,7 +122,7 @@ public class JQA2JSON implements Step {
 				"\"belongsTo\":     \"" + belongsTo + "\"" +
 				"\n";
 	}
-
+	
 	private String toMetaDataClass(Node c) {
 		String belongsTo;
 		StatementResult parent = connector
@@ -151,7 +151,7 @@ public class JQA2JSON implements Step {
 				"\"belongsTo\":     \"" + belongsTo + "\"" +
 				"\n";
 	}
-
+	
 	private String toMetaDataAttribute(Node attribute) {
 		String belongsTo = "";
 		String declaredType = "";
@@ -184,7 +184,7 @@ public class JQA2JSON implements Step {
 				"\"belongsTo\":     \"" + belongsTo + "\"" +
 				"\n";
 	}
-
+	
 	private String toMetaDataMethod(Node method) {
 		String belongsTo = "";
 		StatementResult parent = connector.executeRead(
@@ -218,7 +218,7 @@ public class JQA2JSON implements Step {
 				"\"belongsTo\":     \"" + belongsTo + "\"" +
 				"\n";
 	}
-
+	
 	private String toMetaDataEnum(Node e) {
 		String belongsTo = "";
 		StatementResult parent = connector.executeRead("MATCH (parent)-[:DECLARES]->(enum) WHERE ID(enum) = " + e.id() 
@@ -239,7 +239,7 @@ public class JQA2JSON implements Step {
 				"\"belongsTo\":     \"" + belongsTo + "\"" +
 				"\n";
 	}
-
+	
 	private String toMetaDataEnumValue(Node ev) {
 		String belongsTo = "";
 		StatementResult parent = connector.executeRead("MATCH (parent)-[:DECLARES]->(enumValue) WHERE ID(enumValue) = " + ev.id() 
@@ -258,10 +258,10 @@ public class JQA2JSON implements Step {
 				"\"belongsTo\":     \"" + belongsTo + "\"" +
 				"\n";
 	}
-
+	
 	private String toMetaDataAnnotation(Node annotation) {
 		String belongsTo = "";
-		StatementResult parent = connector.executeRead("MATCH (parent:Package)-[:CONTAINS|DECLARES]->(annotation) WHERE ID(annotation) = " + annotation.id() 
+		StatementResult parent = connector.executeRead("MATCH (parent:Package)-[:CONTAINS|DECLARES]->(annotation) WHERE ID(annotation) = " + annotation.id()
 			+ " RETURN parent.hash");
 		if(parent.hasNext()) {
 			belongsTo = parent.single().get("parent.hash").asString();
@@ -295,7 +295,7 @@ public class JQA2JSON implements Step {
 		Collections.sort(tmp);
 		return removeBrackets(tmp);
 	}
-
+	
 	private String getSubClasses(Node element) {
 		ArrayList<String> tmp = new ArrayList<>();
 		connector.executeRead("MATCH (sub:Type)-[:EXTENDS]->(element) WHERE ID(element) = " + element.id() + " RETURN sub").forEachRemaining((result) -> {
@@ -307,19 +307,19 @@ public class JQA2JSON implements Step {
 		Collections.sort(tmp);
 		return removeBrackets(tmp);
 	}
-
+	
 	private String getAccessedBy(Node element) {
 		ArrayList<String> tmp = new ArrayList<>();
 		connector.executeRead("MATCH (access)-[:WRITES|READS]->(element) WHERE ID(element) = " + element.id() + " RETURN access").forEachRemaining((result) -> {
 			Node node = result.get("access").asNode();
 			if(node.containsKey("hash")) {
 				tmp.add(node.get("hash").asString());
-			}			
+			}
 		});
 		Collections.sort(tmp);
 		return removeBrackets(tmp);
 	}
-
+	
 	private String getAccesses(Node element) {
 		ArrayList<String> tmp = new ArrayList<>();
 		connector.executeRead("MATCH (access)<-[:WRITES|READS]-(element) WHERE ID(element) = " + element.id() + " RETURN access").forEachRemaining((result) -> {
@@ -331,7 +331,7 @@ public class JQA2JSON implements Step {
 		Collections.sort(tmp);
 		return removeBrackets(tmp);
 	}
-
+	
 	private String getCalls(Node element) {
 		ArrayList<String> tmp = new ArrayList<>();
 		connector.executeRead("MATCH (element)-[:INVOKES]->(call) WHERE ID(element) = " + element.id() + " RETURN call").forEachRemaining((result) -> {
@@ -343,7 +343,7 @@ public class JQA2JSON implements Step {
 		Collections.sort(tmp);
 		return removeBrackets(tmp);
 	}
-
+	
 	private String getCalledBy(Node element) {
 		ArrayList<String> tmp = new ArrayList<>();
 		connector.executeRead("MATCH (element)<-[:INVOKES]-(call) WHERE ID(element) = " + element.id() + " RETURN call").forEachRemaining((result) -> {
@@ -355,7 +355,7 @@ public class JQA2JSON implements Step {
 		Collections.sort(tmp);
 		return removeBrackets(tmp);
 	}
-
+	
 	private String getModifiers(Node element) {
 		ArrayList<String> tmp = new ArrayList<>();
 		if (element.containsKey("visibility")) {
@@ -377,7 +377,7 @@ public class JQA2JSON implements Step {
 		Collections.sort(tmp);
 		return removeBrackets(tmp);
 	}
-
+	
 	private String getParameters(Node method) {
 		ArrayList<String> parameterList = new ArrayList<>();
 		connector.executeRead("MATCH (method)-[:HAS]->(p:Parameter) WHERE ID(method) = " + method.id() + " RETURN p ORDER BY p.index ASC").forEachRemaining((result) -> {
@@ -388,11 +388,11 @@ public class JQA2JSON implements Step {
 		});
 		return removeBrackets(parameterList);
 	}
-
+	
 	private String removeBrackets(List<String> list) {
 		return removeBrackets(list.toString());
 	}
-
+	
 	private String removeBrackets(String string) {
 		return StringUtils.remove(StringUtils.remove(string, "["), "]");
 	}
