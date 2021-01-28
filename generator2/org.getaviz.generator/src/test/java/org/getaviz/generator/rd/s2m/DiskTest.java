@@ -17,7 +17,7 @@ class DiskTest {
         assertEquals(16, result);
     }
 
-    @Test
+    /*@Test
     void calculateSpinesTest() {
         Disk disk = createSubDisk();
         disk.setRadius(3.5);
@@ -47,7 +47,7 @@ class DiskTest {
                 "-2.395914870750409 0.0, 2.8315594803123174 -2.057248383023654 0.0, 3.0670733801535226 " +
                 "-1.6861378593560037 0.0, 3.25421770060888 -1.2884359343963725 0.0, 3.390041063950209 " +
                 "-0.8704146050769908 0.0, 3.4724014546006727 -0.43866631747506324 0.0, 3.5 0.0 0.0'", spine);
-    }
+    }*/
 
     @Test
     void calculateRadiusAndAreaWithoutBorderTest() {
