@@ -6,6 +6,7 @@ $payload = array(
   'input.name'                      => $model,
   'input.files'                     => $_REQUEST['input_files'],
   'metaphor'                        => $_REQUEST['metaphor'],
+  'test_coverage'                   => $_REQUEST['test_coverage'],
   'city.building_type'              => $_REQUEST['city_building_type'],
   'city.scheme'                     => $_REQUEST['city_scheme'],
   'city.class_elements_mode'        => $_REQUEST['city_class_elements_mode'],

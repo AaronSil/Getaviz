@@ -75,6 +75,22 @@ var generationFormController = (function() {
 						type: 'blank',
 						rowHeight: '25px'
 					},
+					{
+						bind: 'test_coverage',
+						name: 'test_coverage',
+						type: 'option',
+						label: 'test_coverage',
+						labelAlign: 'right',
+						labelWidth: '325px',
+						width: '200px',
+						component: 'jqxDropDownList',
+						options: [
+							{ value: 'true' },
+							{ value: 'false'}
+						],
+						info: 'If true, it is attempted to extract a test coverage',
+						padding: {left: 8, top: 0, bottom: 0, right: 8}
+					},
 					
 					// City Options 
 					{
@@ -880,6 +896,7 @@ var generationFormController = (function() {
 					input_name: 'default',
 					input_files: '',
 					metaphor: 'city',
+					test_coverage: true,
 					city_building_type: 'original',
 					city_scheme: 'types',
 					city_class_elements_mode: 'methods_and_attributes',

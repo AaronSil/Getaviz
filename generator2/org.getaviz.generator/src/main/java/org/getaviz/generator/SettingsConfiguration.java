@@ -427,6 +427,10 @@ public class SettingsConfiguration {
 	public boolean isMethodTypeMode() {
 		return config.getBoolean("rd.method_type_mode", false);
 	}
+	
+	public boolean extractTestCoverage() {
+		return config.getBoolean("test_coverage", true);
+	}
 
 	public enum OutputFormat {
 		X3D, AFrame
