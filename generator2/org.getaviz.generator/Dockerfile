@@ -7,6 +7,7 @@ RUN mvn package
 FROM getaviz/generator2-base:1.3.2
 COPY --from=MAVEN_TOOL_CHAIN /tmp/generator2/target/org.getaviz.generator*.war /var/lib/jetty/webapps/root.war
 COPY settings.properties /opt/config/settings.properties
+COPY input/* /var/lib/jetty/input/
 USER root
 LABEL maintainer="david.baum@uni-leipzig.de" \
  version="1.0"
