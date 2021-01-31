@@ -90,26 +90,26 @@ public class TestCoverage implements Step {
 			log.info("Report schema is: "+line);
 			while(( line = br.readLine() ) != null) {
 				String[] values = line.split(",");
-				String className = values[2];
-				String fqn = values[1]+"."+className;
-				double statementCov = Double.parseDouble(values[4])
-				/(Double.parseDouble(values[3])+Double.parseDouble(values[4]));
-				double branchCov = Double.parseDouble(values[6])
-				/(Double.parseDouble(values[5])+Double.parseDouble(values[6]));
-				double lineCov = Double.parseDouble(values[8])
-				/(Double.parseDouble(values[7])+Double.parseDouble(values[8]));
-				double cxtyCov = Double.parseDouble(values[10])
-				/(Double.parseDouble(values[9])+Double.parseDouble(values[10]));
-				double methodCov = Double.parseDouble(values[12])
-				/(Double.parseDouble(values[11])+Double.parseDouble(values[12]));
+				
+				String className    = values[2];
+				String fqn          = values[1] + "." + className;
+				int    lines        = Integer.parseInt(values[7]) + Integer.parseInt(values[8]);
+				double statementCov = Double.parseDouble(values[4])  / (Double.parseDouble(values[3])  + Double.parseDouble(values[4]));
+				double branchCov    = Double.parseDouble(values[6])  / (Double.parseDouble(values[5])  + Double.parseDouble(values[6]));
+				double lineCov      = Double.parseDouble(values[8])  / lines;
+				double cxtyCov      = Double.parseDouble(values[10]) / (Double.parseDouble(values[9])  + Double.parseDouble(values[10]));
+				double methodCov    = Double.parseDouble(values[12]) / (Double.parseDouble(values[11]) + Double.parseDouble(values[12]));
+				
 				String s = String.format("MATCH (n {fqn: '%s'}) CREATE (n)-[:HAS_COVERAGE]->(Coverage:Coverage {name: '%sCoverage'})", fqn, className);
 				connector.executeWrite(s);
+				
 				s = String.format("MATCH (Coverage:Coverage {name: '%sCoverage'})", className);
-				if(!Double.isNaN(statementCov)) s = s.concat(" SET Coverage.statementCoverage="+ statementCov);
-				if(!Double.isNaN(branchCov))    s = s.concat(" SET Coverage.branchCoverage="+ branchCov);
-				if(!Double.isNaN(lineCov))      s = s.concat(" SET Coverage.lineCoverage="+ lineCov);
-				if(!Double.isNaN(cxtyCov))      s = s.concat(" SET Coverage.complexityCoverage="+ cxtyCov);
-				if(!Double.isNaN(methodCov)) s = s.concat(" SET Coverage.methodCoverage="+ methodCov);
+				s +=                            s += " SET Coverage.lines="             + lines;
+				if(!Double.isNaN(statementCov)) s += " SET Coverage.statementCoverage=" + statementCov;
+				if(!Double.isNaN(branchCov))    s += " SET Coverage.branchCoverage="    + branchCov;
+				if(!Double.isNaN(lineCov))      s += " SET Coverage.lineCoverage="      + lineCov;
+				if(!Double.isNaN(cxtyCov))      s += " SET Coverage.complexityCoverage="+ cxtyCov;
+				if(!Double.isNaN(methodCov))    s += " SET Coverage.methodCoverage="    + methodCov;
 				if(s.contains("SET")) connector.executeWrite(s);
 			}
 		} catch (IOException e) {
