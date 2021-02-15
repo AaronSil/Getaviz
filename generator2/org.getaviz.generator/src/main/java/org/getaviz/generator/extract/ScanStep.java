@@ -28,7 +28,7 @@ class ScanStep implements Step {
             log.info("jQAssistant scan started.");
             log.info("Scanning from URI(s) " + inputFiles);
             try {
-                String options = "scan -reset -u " + inputFiles + " -storeUri " +  DatabaseConnector.getDatabaseURL();
+                String options = "scan -reset -p /opt/config/scan.properties -u " + inputFiles + " -storeUri " +  DatabaseConnector.getDatabaseURL();
                 Process pScan = runtime.exec(pathJQAssistant + " " + options);
                 pScan.waitFor();
             } catch (IOException | InterruptedException e) {
