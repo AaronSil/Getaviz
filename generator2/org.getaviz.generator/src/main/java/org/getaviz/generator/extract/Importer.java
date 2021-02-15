@@ -12,10 +12,12 @@ import java.util.List;
 public class Importer {
     private static Log log = LogFactory.getLog(Importer.class);
     private ScanStep scanStep;
+    private DatabaseCleaner databaseCleaner;
     private ArrayList<ProgrammingLanguage> languages = new ArrayList<>();
 
     public Importer(SettingsConfiguration config){
         this.scanStep = new ScanStep(config.getInputFiles(), config.isSkipScan());
+        this.databaseCleaner = new DatabaseCleaner(config);
     }
 
     public Importer(String inputFiles) {
@@ -26,6 +28,9 @@ public class Importer {
         log.info("Import started");
         scanStep.run();
         log.info("Import finished");
+        log.info("Cleaning the database of undesired nodes");
+        databaseCleaner.run();
+        log.info("Cleaning finished");
     }
 
     public List<ProgrammingLanguage> getImportedProgrammingLanguages() {
