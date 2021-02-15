@@ -2,6 +2,7 @@ package org.getaviz.generator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.getaviz.generator.extract.CodeExtractor;
 import org.getaviz.generator.jqa.CEnhancement;
 import org.getaviz.generator.jqa.JavaEnhancement;
 import org.getaviz.generator.jqa.TestCoverage;
@@ -27,6 +28,8 @@ public class Generator {
 		c.run();
 		TestCoverage tc = new TestCoverage(config);
 		tc.run();
+		CodeExtractor code = new CodeExtractor(config);
+		code.run();
 		metaphor.generate();
 		log.info("Generator finished");
 	}
