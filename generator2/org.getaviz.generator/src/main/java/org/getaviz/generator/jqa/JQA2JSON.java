@@ -121,8 +121,8 @@ public class JQA2JSON implements Step {
 			"\"type\":          \"FAMIX.Namespace\"," +
 			"\n" +
 			"\"belongsTo\":     \"" + belongsTo + "\"" +
-			"\n" +
-			getCoverage(namespace.get("fqn").asString());
+			"\n";// +
+			//getCoverage(namespace.get("fqn").asString());
 		return rectifyCommas(metaDataString);
 	}
 	
@@ -224,8 +224,8 @@ public class JQA2JSON implements Step {
 			"\"accesses\":\t \t \"" + getAccesses(method) + "\"," +
 			"\n" +
 			"\"belongsTo\":     \"" + belongsTo + "\"" +
-			"\n" +
-			getCoverage(StringEscapeUtils.escapeHtml4(method.get("fqn").asString()));
+			"\n";// +
+			//getCoverage(StringEscapeUtils.escapeHtml4(method.get("fqn").asString()));
 		return rectifyCommas(metaDataString);
 	}
 	
@@ -299,16 +299,19 @@ public class JQA2JSON implements Step {
 	
 	private String getCoverage(String fqn) {
 		String s = "";
-		StatementResult result = connector.executeRead("MATCH (n:Coverage)<-[:HAS_COVERAGE]-(m {fqn: '"+fqn+"'}) RETURN n");
-		if(result.hasNext()){
-			Node node = result.single().get("n").asNode();
-			if(node.containsKey("lines"))              s += "\"lineCount\": "          + node.get("lines")+",\n";
-			if(node.containsKey("statementCoverage"))  s += "\"statementCoverage\": "  + node.get("statementCoverage")+",\n";
-			if(node.containsKey("branchCoverage"))     s += "\"branchCoverage\": "     + node.get("branchCoverage")+",\n";
-			if(node.containsKey("lineCoverage"))       s += "\"lineCoverage\": "       + node.get("lineCoverage")+",\n";
-			if(node.containsKey("complexityCoverage")) s += "\"complexityCoverage\": " + node.get("complexityCoverage")+",\n";
-			if(node.containsKey("methodCoverage"))     s += "\"methodCoverage\": "     + node.get("methodCoverage")+"\n";
+		if(!fqn.startsWith("target")) {
+			StatementResult result = connector.executeRead("MATCH (n:Coverage)<-[:HAS_COVERAGE]-(m {fqn: '"+fqn+"'}) RETURN n");
+			if(result.hasNext()){
+				Node node = result.single().get("n").asNode();
+				if(node.containsKey("lines"))              s += "\"lineCount\": "          + node.get("lines")+",\n";
+				if(node.containsKey("statementCoverage"))  s += "\"statementCoverage\": "  + node.get("statementCoverage")+",\n";
+				if(node.containsKey("branchCoverage"))     s += "\"branchCoverage\": "     + node.get("branchCoverage")+",\n";
+				if(node.containsKey("lineCoverage"))       s += "\"lineCoverage\": "       + node.get("lineCoverage")+",\n";
+				if(node.containsKey("complexityCoverage")) s += "\"complexityCoverage\": " + node.get("complexityCoverage")+",\n";
+				if(node.containsKey("methodCoverage"))     s += "\"methodCoverage\": "     + node.get("methodCoverage")+"\n";
+			}
 		}
+		log.info(fqn + "\n" + s);
 		return s;
 	}
 	
