@@ -112,6 +112,7 @@ public class JQA2JSON implements Step {
 			belongsTo = parentHash.single().get("parent.hash").asString();
 		}
 		String metaDataString =
+			"\n" +
 			"\"id\":            \"" + namespace.get("hash").asString() + "\"," +
 			"\n" +
 			"\"qualifiedName\": \"" + namespace.get("fqn").asString() + "\"," +
@@ -120,10 +121,9 @@ public class JQA2JSON implements Step {
 			"\n" +
 			"\"type\":          \"FAMIX.Namespace\"," +
 			"\n" +
-			"\"belongsTo\":     \"" + belongsTo + "\"" +
-			"\n";// +
+			"\"belongsTo\":     \"" + belongsTo + "\"";
 			//getCoverage(namespace.get("fqn").asString());
-		return rectifyCommas(metaDataString);
+		return metaDataString;
 	}
 	
 	private String toMetaDataClass(Node c) {
@@ -138,6 +138,7 @@ public class JQA2JSON implements Step {
 			belongsTo = parent.single().get("parent").asNode().get("hash").asString("YYY");
 		}
 		String metaDataString =
+			"\n" +
 			"\"id\":            \"" + c.get("hash").asString() + "\"," +
 			"\n" +
 			"\"qualifiedName\": \"" + c.get("fqn").asString() + "\"," +
@@ -152,10 +153,9 @@ public class JQA2JSON implements Step {
 			"\n" +
 			"\"superClassOf\":  \"" + getSubClasses(c) + "\"," +
 			"\n" +
-			"\"belongsTo\":     \"" + belongsTo + "\"" +
-			"\n" +
+			"\"belongsTo\":     \"" + belongsTo + "\"," +
 			getCoverage(c.get("fqn").asString());
-		return rectifyCommas(metaDataString);
+		return metaDataString;
 	}
 	
 	private String toMetaDataAttribute(Node attribute) {
@@ -174,6 +174,7 @@ public class JQA2JSON implements Step {
 			declaredType = type.get("name").asString();
 		}
 		return
+			"\n" +
 			"\"id\":            \"" + attribute.get("hash").asString() + "\"," +
 			"\n" +
 			"\"qualifiedName\": \"" + attribute.get("fqn").asString() + "\"," +
@@ -188,8 +189,7 @@ public class JQA2JSON implements Step {
 			"\n" +
 			"\"accessedBy\":\t \"" + getAccessedBy(attribute) + "\"," +
 			"\n" +
-			"\"belongsTo\":     \"" + belongsTo + "\"" +
-			"\n";
+			"\"belongsTo\":     \"" + belongsTo + "\"";
 	}
 	
 	private String toMetaDataMethod(Node method) {
@@ -205,6 +205,7 @@ public class JQA2JSON implements Step {
 			signature = signature.substring(0, lBraceIndex + 1) + getParameters(method) + ")";
 		}
 		String metaDataString =
+			"\n" +
 			"\"id\":            \"" + method.get("hash").asString() + "\"," +
 			"\n" +
 			"\"qualifiedName\": \"" + StringEscapeUtils.escapeHtml4(method.get("fqn").asString()) + "\"," +
@@ -226,7 +227,7 @@ public class JQA2JSON implements Step {
 			"\"belongsTo\":     \"" + belongsTo + "\"" +
 			"\n";// +
 			//getCoverage(StringEscapeUtils.escapeHtml4(method.get("fqn").asString()));
-		return rectifyCommas(metaDataString);
+		return metaDataString;
 	}
 	
 	private String toMetaDataEnum(Node e) {
@@ -237,6 +238,7 @@ public class JQA2JSON implements Step {
 			belongsTo = parent.single().get("parent.hash").asString();
 		}
 		return
+			"\n" +
 			"\"id\":            \"" + e.get("hash").asString() + "\"," +
 			"\n" +
 			"\"qualifiedName\": \"" + e.get("fqn").asString() + "\"," +
@@ -247,8 +249,7 @@ public class JQA2JSON implements Step {
 			"\n" +
 			"\"modifiers\":     \"" + getModifiers(e) + "\"," +
 			"\n" +
-			"\"belongsTo\":     \"" + belongsTo + "\"" +
-			"\n";
+			"\"belongsTo\":     \"" + belongsTo + "\"";
 	}
 	
 	private String toMetaDataEnumValue(Node ev) {
@@ -259,6 +260,7 @@ public class JQA2JSON implements Step {
 			belongsTo = parent.single().get("parent.hash").asString();
 		}
 		return
+			"\n" +
 			"\"id\":            \"" + ev.get("hash").asString() + "\"," +
 			"\n" +
 			"\"qualifiedName\": \"" + ev.get("fqn").asString() + "\"," +
@@ -267,8 +269,7 @@ public class JQA2JSON implements Step {
 			"\n" +
 			"\"type\":          \"FAMIX.EnumValue\"," +
 			"\n" +
-			"\"belongsTo\":     \"" + belongsTo + "\"" +
-			"\n";
+			"\"belongsTo\":     \"" + belongsTo + "\"";
 	}
 	
 	private String toMetaDataAnnotation(Node annotation) {
@@ -293,25 +294,24 @@ public class JQA2JSON implements Step {
 			"\n" +
 			"\"superClassOf\":  \"\"," +
 			"\n" +
-			"\"belongsTo\":     \"" + belongsTo + "\"" +
-			"\n";
+			"\"belongsTo\":     \"" + belongsTo + "\"";
 	}
 	
 	private String getCoverage(String fqn) {
-		String s = "";
+		String s = "\n\"testCoverage\": {\n";
 		if(!fqn.startsWith("target")) {
 			StatementResult result = connector.executeRead("MATCH (n:Coverage)<-[:HAS_COVERAGE]-(m {fqn: '"+fqn+"'}) RETURN n");
 			if(result.hasNext()){
 				Node node = result.single().get("n").asNode();
-				if(node.containsKey("lines"))              s += "\"lineCount\": "          + node.get("lines")+",\n";
-				if(node.containsKey("statementCoverage"))  s += "\"statementCoverage\": "  + node.get("statementCoverage")+",\n";
-				if(node.containsKey("branchCoverage"))     s += "\"branchCoverage\": "     + node.get("branchCoverage")+",\n";
-				if(node.containsKey("lineCoverage"))       s += "\"lineCoverage\": "       + node.get("lineCoverage")+",\n";
-				if(node.containsKey("complexityCoverage")) s += "\"complexityCoverage\": " + node.get("complexityCoverage")+",\n";
-				if(node.containsKey("methodCoverage"))     s += "\"methodCoverage\": "     + node.get("methodCoverage")+"\n";
+				if(node.containsKey("lines"))              s += "\t\"lineCount\": "          + node.get("lines")+",\n";
+				if(node.containsKey("statementCoverage"))  s += "\t\"statementCoverage\": "  + node.get("statementCoverage")+",\n";
+				if(node.containsKey("branchCoverage"))     s += "\t\"branchCoverage\": "     + node.get("branchCoverage")+",\n";
+				if(node.containsKey("lineCoverage"))       s += "\t\"lineCoverage\": "       + node.get("lineCoverage")+",\n";
+				if(node.containsKey("complexityCoverage")) s += "\t\"complexityCoverage\": " + node.get("complexityCoverage")+",\n";
+				if(node.containsKey("methodCoverage"))     s += "\t\"methodCoverage\": "     + node.get("methodCoverage")+"\n";
 			}
 		}
-		log.info(fqn + "\n" + s);
+		s += "}";
 		return s;
 	}
 	
