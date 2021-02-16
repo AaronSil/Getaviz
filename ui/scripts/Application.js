@@ -135,7 +135,7 @@ var application = (function() {
 			events.log.error.publish({ text: err.message });
 		}
 
-		macroExplorerController.sendInitialEvent();
+		//macroExplorerController.sendInitialEvent();
 	}
 		
 	
