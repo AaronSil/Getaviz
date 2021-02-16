@@ -16,7 +16,7 @@ if (isset($_GET["setup"])) {
     $setupUrl = "setups/" . $_GET["setup"] . ".js";
 }
 
-$modelUrl = "data/City/model";
+$modelUrl = "data/junit4/model";
 if (isset($_GET["model"])) {
     $modelUrl = $srcDir . "/" . $_GET["model"] . "/model";
 } else {
