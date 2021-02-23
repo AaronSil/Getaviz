@@ -93,16 +93,19 @@ pre.source li {
   padding-left: 0px;
 }
 
-pre.source span.fc {
+#codeTag span.fc {
   background-color:#ccffcc;
+	text-shadow: none;
 }
 
-pre.source span.nc {
+#codeTag span.nc {
   background-color:#ffaaaa;
+	text-shadow: none;
 }
 
-pre.source span.pc {
+#codeTag span.pc {
   background-color:#ffffcc;
+	text-shadow: none;
 }
 
 pre.source span.bfc {
