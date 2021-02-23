@@ -10,10 +10,10 @@ var sourceCodeController = (function(){
 
     //config parameters	
 	let controllerConfig = {
-		fileType : "java",
-        url: "",
-        showCodeWindowButton:true,
-        showCode:true,
+		fileType : "html",
+		url: "",
+		showCodeWindowButton: true,
+		showCode: true,
 	};
     
 	function initialize(setupConfig){
@@ -83,7 +83,7 @@ var sourceCodeController = (function(){
                     let codePre = document.createElement("PRE");
                     codePre.className = "line-numbers language-"+controllerConfig.fileType;
                     codePre.id = "codePre";
-                    codePre.style = "overflow:auto;";
+                    codePre.style = "overflow:auto; height:100vh;";
 
                     let codeTag = document.createElement("CODE");
                     codeTag.id = "codeTag";
@@ -153,13 +153,33 @@ var sourceCodeController = (function(){
         } else if(controllerConfig.fileType === "c"){
             const cCodeFile = entity.filename;
             displayCode(cCodeFile);
-        }
+        } else if(controllerConfig.fileType === "html") {
+						if (entity.type === "Namespace"){
+                // Package 
+                resetSourceCode();
+                return;
+            }
+            // classEntity = Klasse, in der sich das selektierte Element befindet
+            // inner Klassen werden auf Hauptklasse aufgeloest
+            let classEntity = entity;
+            while( classEntity.type !== "Class" ){
+                classEntity = classEntity.belongsTo;
+            }		
+            
+            // ersetze . durch / und fuege .java an -> file
+            const javaCodeFile = classEntity.qualifiedName.replace(/\./g, "/") + "." + "java";
+    
+            displayCode(javaCodeFile, classEntity, entity);
+				}
        	          
     }
 
     function displayCode(file, classEntity, entity){
         if (controllerConfig.url === "") {
-            file = "../../ui/" + modelUrl + "/src/" + file;
+						let package = file.replaceAll("/", ".").replace(/\.[^\.]+\.java/, "");
+						let className = file.match(/[^\/]+\.java$/)[0];
+						file = "../../" + modelUrl + "/../src/" + package + "/" + className + ".html";
+//             file = "../../ui/" + modelUrl + "/src/" + file;
         } else {
             file = controllerConfig.url + file;
         }

@@ -15,37 +15,38 @@ var codeHelperFunction =(function(){
 
     // display and highlight Code    
     function displayCode(file, classEntity, entity, callBackFunction, fileType){
-		const codeTag = $("#codeTag").get(0);
-		const xhttp = new XMLHttpRequest();
-		
-
-        xhttp.onreadystatechange = function(){
+			const codeTag = $("#codeTag").get(0);
+			const xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function(){
 			if (xhttp.readyState === 4 && xhttp.status === 200) {
-                            
-
 				codeTag.textContent = xhttp.responseText;
-
-				Prism.highlightElement(codeTag, false, function(){
-                    if(fileType === "java") {
-                        // alle einfachen Textnodes werden mit einem
-                        // span-Tag umgeben, dadurch Selektierung moeglich
-                        textNodesToSpan();
-
-                        // alle Vorkommen des selektierten Elements
-                        // im QUellcode hervorheben
-                        highlightSelectedElement(entity);
-
-                        // versieht Definitionen der Attribute und
-                        // Methoden mit einem Klickereignis
-                        addInteraction(classEntity, callBackFunction);
-                    }
-                });     
-			} else if (xhttp.readyState === 4 && xhttp.status === 404){
+				Prism.highlightElement(codeTag, false, function() {
+					if(fileType === "java") {
+						// alle einfachen Textnodes werden mit einem
+						// span-Tag umgeben, dadurch Selektierung moeglich
+						textNodesToSpan();
+						// alle Vorkommen des selektierten Elements
+						// im QUellcode hervorheben
+						highlightSelectedElement(entity);
+						// versieht Definitionen der Attribute und
+						// Methoden mit einem Klickereignis
+						addInteraction(classEntity, callBackFunction);
+					} else if (fileType === "html") {
+						codeSubstring = codeTag.textContent.substring(codeTag.textContent.search(/package /, codeTag.textContent.search(/<\/body>/)));
+						codeTag.innerHTML = codeSubstring;
+						console.debug(codeTag);
+						textNodesToSpan();
+						highlightSelectedElement(entity);
+						addInteraction(classEntity, callBackFunction);
+					}
+				});     
+			} else if (xhttp.readyState === 4 && xhttp.status === 404) {
 				codeTag.textContent = "Error: " + file + ", file not found!";
 			}
 		};
 
 		xhttp.open("GET", file, true);
+		console.debug(xhttp);
 		xhttp.send();
     }
 
