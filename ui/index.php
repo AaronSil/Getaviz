@@ -21,7 +21,7 @@ if (isset($_GET["model"])) {
     $modelUrl = $srcDir . "/" . $_GET["model"] . "/model";
 } else {
     if (!isset($_GET["setup"])) {
-        $setupUrl = "setups/web/City bank.js";
+        $setupUrl = "setups/test/testCoverage.js";
     }
 }
 
