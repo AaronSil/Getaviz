@@ -23,7 +23,7 @@ import java.util.jar.JarInputStream;
 	
 	public CodeExtractor(SettingsConfiguration config) {
 		this.config = config;
-		outputDirectory = config.getOutputPath() + "../sourceCode";
+		outputDirectory = config.getOutputPath() + "../src";
 	}
 	
 	public void run() {
