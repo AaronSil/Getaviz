@@ -34,15 +34,15 @@ var model = (function() {
 			if(element.type === undefined){
 				console.log("element.type undefined");
 			}
-
 			let entity = createEntity(
-				element.type.substring(element.type.indexOf(".") + 1), 
-				element.id, 
-				element.name, 
-				element.qualifiedName, 
+				element.type.substring(element.type.indexOf(".") + 1),
+				element.id,
+				element.name,
+				element.qualifiedName,
 				element.belongsTo,
-                element.antipattern,
-                element.roles,
+				element.testCoverage,
+				element.antipattern,
+				element.roles,
 				element.isTransparent,
 				element.version
 			);
@@ -552,14 +552,15 @@ var model = (function() {
 	
 	
 	
-	function createEntity(type, id, name, qualifiedName, belongsTo){
+	function createEntity(type, id, name, qualifiedName, belongsTo, testCoverage){
 		let entity = {
 			type: type,
 			id: id,
 			name: name,
 			qualifiedName: qualifiedName,
 			belongsTo: belongsTo,
-			children: []						
+			children: [],
+			testCoverage: testCoverage
 		};
 		
 		const statesArray = Object.keys(states);
