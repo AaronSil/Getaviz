@@ -100,12 +100,24 @@ var canvasManipulator = (function () {
     }
 
     function setColor(object, color) {
-        color == colors.darkred ? color = colors.red : color = color;
+        if(true) {
+					//object.setAttribute("color", "rgb("+parseInt(color.r*255)+","+parseInt(color.g*255)+","+parseInt(color.b*255)+")");
+					let hexString = "#";
+					for(el in color) {
+						if(color[el].toString(16).length == 1) {
+							hexString += 0;
+						}
+						hexString += color[el].	toString(16);
+					}
+ 					object.setAttribute("color", hexString);
+				} else {
+				color == colors.darkred ? color = colors.red : color = color;
         let colorValues = color.split(" ");
         if (colorValues.length == 3) {
             color = "#" + parseInt(colorValues[0]).toString(16) + "" + parseInt(colorValues[1]).toString(16) + "" + parseInt(colorValues[2]).toString(16);
         }
         object.setAttribute("color", color);
+				}
     }
 
     function hideEntities(entities) {
