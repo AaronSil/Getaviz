@@ -17,7 +17,9 @@
 
 		{ 	name: 	"canvasResetViewController" 
 		},
-		
+		{
+			name: "testCoverageController"
+		}
 	],
 		
 
@@ -64,15 +66,11 @@
 						second: {
 							size: "90%",	
 							collapsible: false,
-							
-							
-									
 							canvas: { },
-							
 							controllers: [
-								{ name: "defaultLogger" },												
-
+								{ name: "defaultLogger" },
 								{ name: "canvasSelectController" },
+								{ name: "testCoverageController" }
 							],						
 						}
 					}
