@@ -176,7 +176,7 @@ var canvasSelectController = (function() {
 		}
 		
 		//higlight new selected entity
-		canvasManipulator.highlightEntities([entity], controllerConfig.color);		
+// 		canvasManipulator.highlightEntities([entity], controllerConfig.color);		
 
 		//center of rotation
 		if(controllerConfig.setCenterOfRotation){
@@ -186,7 +186,7 @@ var canvasSelectController = (function() {
 	
 	function onEntityUnselected(applicationEvent){
 		var entity = applicationEvent.entities[0];
-		canvasManipulator.unhighlightEntities([entity]);		
+		//canvasManipulator.unhighlightEntities([entity]);		
 	}
 
 	function showProgressBar(eventObject){
