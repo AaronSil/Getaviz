@@ -1,0 +1,7 @@
+ #testCoverageDiv > div {
+	padding: 0.5rem;
+ }
+ 
+#treeMap:hover {
+	cursor: pointer;
+}
