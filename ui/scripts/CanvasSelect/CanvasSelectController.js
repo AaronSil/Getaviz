@@ -9,7 +9,7 @@ var canvasSelectController = (function() {
 	//config parameters	
 	var controllerConfig = {
 		setCenterOfRotation : false,
-        color: "darkred",
+		color: "#880000",
 		selectionMouseKey: 1,
 		selectionMode: SELECTION_MODES.UP,					
 		selectionDurationSeconds: 0.5,
@@ -176,17 +176,17 @@ var canvasSelectController = (function() {
 		}
 		
 		//higlight new selected entity
-// 		canvasManipulator.highlightEntities([entity], controllerConfig.color);		
+		canvasManipulator.highlightEntities([entity], controllerConfig.color);		
 
 		//center of rotation
 		if(controllerConfig.setCenterOfRotation){
 			canvasManipulator.setCenterOfRotation(entity);
 		}
-    }
+	}
 	
 	function onEntityUnselected(applicationEvent){
 		var entity = applicationEvent.entities[0];
-		//canvasManipulator.unhighlightEntities([entity]);		
+		canvasManipulator.unhighlightEntities([entity]);		
 	}
 
 	function showProgressBar(eventObject){

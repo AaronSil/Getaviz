@@ -13,7 +13,7 @@ var canvasHoverController = (function() {
 	
 	//config parameters	
 	var controllerConfig = {
-		hoverColor: "darkred",
+		hoverColor: "#ffffff",//"darkred",
 		showQualifiedName : false,
 		showVersion : false,
 		showIssues : false

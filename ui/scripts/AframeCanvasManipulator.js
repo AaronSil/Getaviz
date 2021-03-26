@@ -7,6 +7,9 @@ var canvasManipulator = (function () {
         orange: "orange",
         darkorange: "darkorange"
     };
+		
+		trueHighlighting = true;
+		highlightColor = "#ffffff";
 
     var scene = {};
 
@@ -19,6 +22,14 @@ var canvasManipulator = (function () {
         initialCameraView.target = globalCamera.target;
         initialCameraView.position = globalCamera.object.position;
         initialCameraView.spherical = globalCamera.spherical;
+				
+				let allEntities = model.getAllEntities();
+				allEntities.forEach(function(el) {
+					let element = document.getElementById(el.id)
+					if(element) {
+						el.originalColor = element.getAttribute("color");
+					}
+				});
     }
 
     function reset() {
@@ -35,6 +46,7 @@ var canvasManipulator = (function () {
     function changeTransparencyOfEntities(entities, value) {
         entities.forEach(function (entity2) {
             //  getting the entity again here, because without it the check if originalTransparency is defined fails sometimes
+						if(!entity2.id) console.debug(entity2);
             let entity = model.getEntityById(entity2.id);
             let component = document.getElementById(entity.id);
             if (component == undefined) {
@@ -100,24 +112,23 @@ var canvasManipulator = (function () {
     }
 
     function setColor(object, color) {
-        if(true) {
-					//object.setAttribute("color", "rgb("+parseInt(color.r*255)+","+parseInt(color.g*255)+","+parseInt(color.b*255)+")");
-					let hexString = "#";
-					for(el in color) {
-						if(color[el].toString(16).length == 1) {
-							hexString += 0;
-						}
-						hexString += color[el].	toString(16);
-					}
- 					object.setAttribute("color", hexString);
-				} else {
-				color == colors.darkred ? color = colors.red : color = color;
-        let colorValues = color.split(" ");
-        if (colorValues.length == 3) {
-            color = "#" + parseInt(colorValues[0]).toString(16) + "" + parseInt(colorValues[1]).toString(16) + "" + parseInt(colorValues[2]).toString(16);
-        }
-        object.setAttribute("color", color);
+			if(typeof color == "string") {
+				if(color.includes("NaN")) {
+					console.debug(color);
+					console.trace()
 				}
+			}
+			if(typeof color == "string" && color.length == 7) {
+				//object.setAttribute("color", "rgb("+parseInt(color.r*255)+","+parseInt(color.g*255)+","+parseInt(color.b*255)+")");
+				object.setAttribute("color", color);
+			} else {
+				color == colors.darkred ? color = colors.red : color = color;
+				let colorValues = color.split(" ");
+				if (colorValues.length == 3) {
+						color = "#" + parseInt(colorValues[0]).toString(16) + "" + parseInt(colorValues[1]).toString(16) + "" + parseInt(colorValues[2]).toString(16);
+				}
+				object.setAttribute("color", color);
+			}
     }
 
     function hideEntities(entities) {
@@ -164,6 +175,39 @@ var canvasManipulator = (function () {
                 } else entity.originalTransparency = 0;
                 entity.currentTransparency = entity.originalTransparency;
             }
+            
+            if(trueHighlighting) {
+							// mix colors and overwrite color variable
+							factor = 5;
+							highlightRGB = [0, 0, 0];
+							for(let i=0; i<3; i++) {
+								highlightRGB[i] = parseInt(color.substring(i*2+1, i*2+3), 16);
+							}
+							if(entity.currentColor == undefined) {
+								entity.currentColor = component.getAttribute("color");
+							}
+							let currentRGB = [0, 0, 0];
+							for(let i=0; i<3; i++) {
+								currentRGB[i] = parseInt(entity.currentColor.substring(i*2+1, i*2+3), 16);
+							}
+							let newRGB = [
+								Math.min(Math.round(currentRGB[0]+Math.sqrt(Math.abs(highlightRGB[0]-currentRGB[0]))*factor), 255),
+								Math.min(Math.round(currentRGB[1]+Math.sqrt(Math.abs(highlightRGB[1]-currentRGB[1]))*factor), 255),
+								Math.min(Math.round(currentRGB[2]+Math.sqrt(Math.abs(highlightRGB[2]-currentRGB[2]))*factor), 255)
+// 								Math.min(Math.round(currentRGB[0]+highlightRGB[0]*factor), 255),
+// 								Math.min(Math.round(currentRGB[1]+highlightRGB[1]*factor), 255),
+// 								Math.min(Math.round(currentRGB[2]+highlightRGB[2]*factor), 255)
+							];
+							let hexString = "#";
+							newRGB.forEach(function(el) {
+								if(el.toString(16).length == 1) {
+									hexString += "0";
+								}
+								hexString += el.toString(16);
+							});
+							color = hexString;
+						}
+						
             setColor(component, color);
             setTransparency(component, 0);
         });
@@ -207,9 +251,9 @@ var canvasManipulator = (function () {
     function getCenterOfEntity(entity) {
         var center = new THREE.Vector3();
         var object = document.getElementById(entity.id).object3DMap.mesh;
-        center.x = object.geometry.boundingSphere.center["x"];
-        center.y = object.geometry.boundingSphere.center["y"];
-        center.z = object.geometry.boundingSphere.center["z"];
+        center.x = object.geometry.boundingSphere.center.x;
+        center.y = object.geometry.boundingSphere.center.y;
+        center.z = object.geometry.boundingSphere.center.z;
         return object.localToWorld(center);
     }
 

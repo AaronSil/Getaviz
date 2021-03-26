@@ -12,8 +12,8 @@ var canvasMarkController = (function() {
 	//config parameters	
 	var controllerConfig = {
 		setCenterOfRotation : false,
-        //markingColor: "green",
-    	selectionMouseKey: 2,
+		markingColor: "#008800",
+		selectionMouseKey: 2,
 		selectionMode: SELECTION_MODES.UP,
 		selectionDurationSeconds: 0.5,
 		selectionMoveAllowed: false,
