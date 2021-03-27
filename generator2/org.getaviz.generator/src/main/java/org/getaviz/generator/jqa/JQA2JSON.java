@@ -121,8 +121,8 @@ public class JQA2JSON implements Step {
 			"\n" +
 			"\"type\":          \"FAMIX.Namespace\"," +
 			"\n" +
-			"\"belongsTo\":     \"" + belongsTo + "\"";
-			//getCoverage(namespace.get("fqn").asString());
+			"\"belongsTo\":     \"" + belongsTo + "\","
+			+ getCoverage(namespace.get("fqn").asString());
 		return metaDataString;
 	}
 	
@@ -153,8 +153,8 @@ public class JQA2JSON implements Step {
 			"\n" +
 			"\"superClassOf\":  \"" + getSubClasses(c) + "\"," +
 			"\n" +
-			"\"belongsTo\":     \"" + belongsTo + "\"," +
-			getCoverage(c.get("fqn").asString());
+			"\"belongsTo\":     \"" + belongsTo + "\","
+			+ getCoverage(c.get("fqn").asString());
 		return metaDataString;
 	}
 	
