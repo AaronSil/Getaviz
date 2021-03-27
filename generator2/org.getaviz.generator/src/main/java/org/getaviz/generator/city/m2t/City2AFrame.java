@@ -104,6 +104,8 @@ public class City2AFrame implements Step {
 		Node entity = connector.getVisualizedEntity(district.id());
 		return "<a-box id=\"" + entity.get("hash").asString() + "\"" +
 				"\n" +
+				"\t class=\"collidable\"" +
+				"\n" +
 				"\t position=\"" + position.get("x") + " " + position.get("y") + " " + position.get("z") + "\"" +
 				"\n" +
 				"\t width=\"" + district.get("width") + "\"" +
@@ -121,6 +123,9 @@ public class City2AFrame implements Step {
 	private String toBuilding(Node building, Node position) {
 		Node entity = connector.getVisualizedEntity(building.id());
 		return "<a-box id=\"" + entity.get("hash").asString() + "\"" +
+				"\n" +
+				"\t\t class=\"collidable\"" +
+				"\n" +
 				"\t\t position=\"" + position.get("x") + " " + position.get("y") + " " + position.get("z") + "\"" +
 				"\n" +
 				"\t\t width=\"" + building.get("width") + "\"" +
@@ -155,6 +160,8 @@ public class City2AFrame implements Step {
 				&& showAttributesAsCylinders) {
 			builder.append("<a-cylinder id=\"").append(entity.get("hash").asString()).append("\"");
 			builder.append("\n");
+			builder.append("\t class=\"collidable\"");
+			builder.append("\n");
 			builder.append(buildPosition(position));
 			builder.append("\n");
 			builder.append("\t radius=\"").append(width / 2).append("\"");
@@ -171,6 +178,8 @@ public class City2AFrame implements Step {
 			builder.append("\n");
 		} else {
 			builder.append("<a-box id=\"").append(entity.get("hash").asString()).append("\"");
+			builder.append("\n");
+			builder.append("\t class=\"collidable\"");
 			builder.append("\n");
 			builder.append(buildPosition(position));
 			builder.append("\n");
@@ -191,6 +200,8 @@ public class City2AFrame implements Step {
 			if (separator.hasLabel(Labels.Cylinder.name())) {
 				builder.append("<a-cylinder  id=\"").append(entity.get("hash").asString()).append("\"");
 				builder.append("\n");
+				builder.append("\t class=\"collidable\"");
+				builder.append("\n");
 				builder.append(buildPosition(pos));
 				builder.append("\n");
 				builder.append("\t radius=\"").append(separator.get("radius")).append("\" ");
@@ -207,6 +218,8 @@ public class City2AFrame implements Step {
 				builder.append("\n");
 			} else {
 				builder.append("<a-box id=\"").append(entity.get("hash").asString()).append("\"");
+				builder.append("\n");
+				builder.append("\t class=\"collidable\"");
 				builder.append("\n");
 				builder.append(buildPosition(pos));
 				builder.append("\n");
@@ -229,6 +242,8 @@ public class City2AFrame implements Step {
 		Node entity = connector.getVisualizedEntity(floor.id());
 		return "<a-box id=\"" + entity.get("hash").asString() + "\"" +
 				"\n" +
+				"\t class=\"collidable\"" +
+				"\n" +
 				buildPosition(position) +
 				"\n" +
 				"\t width=\"" + floor.get("width") + "\"" +
@@ -246,6 +261,8 @@ public class City2AFrame implements Step {
 	private String toChimney(Node chimney, Node position) {
 		Node entity = connector.getVisualizedEntity(chimney.id());
 		return "<a-box id=\"" + entity.get("hash").asString() + "\"" +
+				"\n" +
+				"\t class=\"collidable\"" +
 				"\n" +
 				buildPosition(position) +
 				"\n" +
