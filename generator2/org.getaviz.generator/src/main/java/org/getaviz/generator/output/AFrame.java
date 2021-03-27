@@ -23,6 +23,8 @@ public class AFrame implements OutputFormat {
                 "\n" +
                 "\t    \t cursor=\"rayOrigin: mouse\"" +
                 "\n" +
+                "\t    \t raycaster=\"objects: .collidable\"" +
+                "\n" +
                 "\t    \t embedded=\"true\"" +
                 "\n" +
                 "\t    >" +
