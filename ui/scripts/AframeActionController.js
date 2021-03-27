@@ -92,7 +92,8 @@ var actionController = (function () {
 
     function initialize() {
         var canvas = document.getElementById(canvasId);
-        AFRAME.registerComponent('mouselistener', {
+        AFRAME.registerComponent("mouselistener", {
+					dependencies: ["raycaster"],
             init: function () {
                 this.el.addEventListener("mouseup", function (eventObject) {
                     //general upAction for controllers
