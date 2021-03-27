@@ -14,6 +14,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
+import java.util.HashMap;
 
 import java.util.Arrays; //FIXME: delete after debugging
 
@@ -82,6 +83,7 @@ public class TestCoverage implements Step {
 	}
 	
 	private void readTestReport() {
+		HashMap<String, Integer[]> packages = new HashMap<>();
 		log.info("readTestReport");
 		try {
 			FileReader fr = new FileReader(testReportFile);
@@ -90,6 +92,15 @@ public class TestCoverage implements Step {
 			log.info("Report schema is: "+line);
 			while(( line = br.readLine() ) != null) {
 				String[] values = line.split(",");
+				
+				Integer[] valueSums = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+				if(packages.containsKey(values[1])) {
+					valueSums = packages.get(values[1]);
+				}
+				for(int i=0; i<10; i++) {
+					valueSums[i] += Integer.parseInt(values[i+3]);
+				}
+				packages.put(values[1], valueSums);
 				
 				String className    = values[2];
 				String fqn          = values[1] + "." + className;
@@ -117,13 +128,32 @@ public class TestCoverage implements Step {
 			log.info(e.toString());
 			e.printStackTrace();
 		}
+		addPackageCoverage(packages);
 	}
 	
-	private void addTestCoverage() {
-		
-	}
-	
-	private void addBranchCoverage() {
-	
+	private void addPackageCoverage(HashMap<String, Integer[]> packages) {
+		for(Object key: packages.keySet().toArray()) {
+			Integer[] values = packages.get(key);
+			String fqn = (String)key;
+			String name = fqn.split("[.]")[fqn.split("[.]").length-1] + "Package";
+			String s = String.format("MATCH (n {fqn: '%s'}) CREATE (n)-[:HAS_COVERAGE]->(Coverage:Coverage {name: '%sCoverage'})", fqn, name);
+			connector.executeWrite(s);
+			
+			int lines           = values[4] + values[5];
+			double statementCov = (double)values[1]  / (values[0]  + values[1]);
+			double branchCov    = (double)values[3]  / (values[2]  + values[3]);
+			double lineCov      = (double)values[5]  / lines;
+			double cxtyCov      = (double)values[7] / (values[6]  + values[7]);
+			double methodCov    = (double)values[9] / (values[8] + values[9]);
+				
+				s = String.format("MATCH (Coverage:Coverage {name: '%sCoverage'})", name);
+				s +=                            s += " SET Coverage.lines="             + lines;
+				if(!Double.isNaN(statementCov)) s += " SET Coverage.statementCoverage=" + statementCov;
+				if(!Double.isNaN(branchCov))    s += " SET Coverage.branchCoverage="    + branchCov;
+				if(!Double.isNaN(lineCov))      s += " SET Coverage.lineCoverage="      + lineCov;
+				if(!Double.isNaN(cxtyCov))      s += " SET Coverage.complexityCoverage="+ cxtyCov;
+				if(!Double.isNaN(methodCov))    s += " SET Coverage.methodCoverage="    + methodCov;
+				if(s.contains("SET")) connector.executeWrite(s);
+		}
 	}
 }
