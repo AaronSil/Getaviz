@@ -3,8 +3,9 @@
 ?>
 
 <?php
+	$fileName = $_POST["logFile"];
 	echo "open file\n";
-	$datei = fopen($_POST["logFile"], "a");
+	$datei = fopen('../../logs/'.$fileName, "a");
 
 	echo "write file\n";
 	fwrite($datei, $_POST["logText"]);
