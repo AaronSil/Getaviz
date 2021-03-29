@@ -12,27 +12,26 @@ var experimentController = (function() {
 	
 	var stepTime = 0;
 	var stepTextTime = 0;
-
+	
 	var controllerConfig = {
 		serverURL : "http://" + window.location.host + "/scripts/InteractionLogger/index.php",
 		showBackButton: false,
 		showSureButton: true,
 		showPopup: true
 	};
-
-
-    function initialize(setupConfig){
-
-        application.transferConfigParams(setupConfig, controllerConfig);
-
-        var cssLink = document.createElement("link");
+	
+	
+	function initialize(setupConfig) {
+		application.transferConfigParams(setupConfig, controllerConfig);
+		
+		var cssLink = document.createElement("link");
 		cssLink.type = "text/css";
 		cssLink.rel = "stylesheet";
 		cssLink.href = "scripts/Experiment/ec.css";
 		document.getElementsByTagName("head")[0].appendChild(cssLink);
-				
+		
 		//interactionLogger.logConfig(config.clickConnector, config.clickTransparency, config.taskOrder.toString());
-
+		
 		stepOrder = setupConfig.stepOrder;
 		steps = setupConfig.steps;
 		
@@ -70,12 +69,12 @@ var experimentController = (function() {
 		buttonDiv.appendChild(taskSolvedButton);
 		
 		if(controllerConfig.showBackButton) {
-            var backButton = document.createElement('INPUT');
-            backButton.id = 'backButton';
-            backButton.value = 'Back';
-            backButton.type = 'button';
-            experimentHeaderDiv.appendChild(backButton);
-        }
+						var backButton = document.createElement('INPUT');
+						backButton.id = 'backButton';
+						backButton.value = 'Back';
+						backButton.type = 'button';
+						experimentHeaderDiv.appendChild(backButton);
+				}
 		
 		//taskdialog
 		var taskDialogDiv = document.createElement("DIV");
@@ -106,9 +105,9 @@ var experimentController = (function() {
 		$('#taskSolvedButton').click(taskSolvedButtonClick);
 
 		if(controllerConfig.showBackButton) {
-            $('#backButton').jqxButton({theme: 'metro'});
-            $('#backButton').click(backButtonClick);
-        }
+						$('#backButton').jqxButton({theme: 'metro'});
+						$('#backButton').click(backButtonClick);
+				}
 		
 		//taskdialog
 		$("#taskDialog").jqxWindow({ height: 1000, width: 700, theme: 'metro', isModal: true, autoOpen: false, resizable: false, showCloseButton: false, okButton: $('#button_ok') });
@@ -119,7 +118,7 @@ var experimentController = (function() {
 			}
 			$("#taskDialog").jqxWindow('close');
 		});
-						
+		
 		//initialize first step
 		setNextStep();
 		setStepTexts(currentStep.text, 100, 100, 1000, 300, stepTextTime);		
@@ -141,7 +140,7 @@ var experimentController = (function() {
 	function backButtonClick(event) {
 		previousStep();
 	}
-
+	
 	function resetSolvedButton() {
 		if ($('#taskSolvedButton')[0].value !== 'Next') $('#taskSolvedButton')[0].value = 'Next';
 	}
@@ -157,12 +156,12 @@ var experimentController = (function() {
 		
 	function previousStep() {
 		stopTaskTimer();
-
+		
 		setPreviousStep();
-
+		
 		setStepTexts(currentStep.text, 100, 100, 1000, 300, stepTextTime);
 	}
-		
+	
 	function setNextStep(){
 		
 		stepOrderIterator = stepOrderIterator + 1;
@@ -174,15 +173,14 @@ var experimentController = (function() {
 				currentStep = step;
 				return;
 			}
-		});		
+		});
 	}
 	
 	function setPreviousStep() {
 		if (stepOrderIterator > 1) {
 			stepOrderIterator = stepOrderIterator - 1;
-
 			var nextStepByStepOrder = stepOrder[stepOrderIterator - 1];
-
+			
 			steps.forEach(function(step) {
 				if (step.number == nextStepByStepOrder) {
 					currentStep = step;
@@ -200,8 +198,8 @@ var experimentController = (function() {
 			fullText = fullText + text + "<br/>";
 		});
 		if(controllerConfig.showPopup) {
-            showPopup(fullText, posx, posy, width, height, time);
-        }
+						showPopup(fullText, posx, posy, width, height, time);
+				}
 		setText(fullText);				
 	}
 	
@@ -249,7 +247,7 @@ var experimentController = (function() {
 	
 	
 	
-			
+	
 	
 	//timout after task time
 	//**********************
@@ -270,7 +268,7 @@ var experimentController = (function() {
 		}
 	}
 	
-		
+	
 	function startTaskTimer(timeoutInMin){
 		timeOutTime = Date.now() + ( timeoutInMin * 60 * 1000);	
 		taskTimerOn = true;
@@ -306,16 +304,16 @@ var experimentController = (function() {
 		
 		var taskEntitiesIds = currentStep.entities;			
 		
-		var	correctMarks = 0;			
+		var correctMarks = 0;
 		var falseMarks = 0;
-		var missingMarks = 0;			
+		var missingMarks = 0;
 		
 		for(var i = 0; i < taskEntitiesIds.length; i++) {				
 			if(markedEntites.has(taskEntitiesIds[i])){
 				correctMarks++;
 			} else {
 				missingMarks++;
-			}				
+			}
 		}
 		
 		falseMarks = markedEntites.size - correctMarks;
