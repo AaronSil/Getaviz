@@ -25,9 +25,11 @@ var interactionLogger = (function() {
 
 	function initialize(setupConfig){ 	
 		application.transferConfigParams(setupConfig, controllerConfig);
-  			
-		var x3domRuntime = document.getElementById('x3dElement').runtime;
-		viewArea = x3domRuntime.canvas.doc._viewarea;			
+		
+		if(visMode != "aframe") {
+			var x3domRuntime = document.getElementById('aframe').runtime;
+			viewArea = x3domRuntime.canvas.doc._viewarea;
+		}
 	}
 
 	function activate(){
@@ -144,9 +146,10 @@ var interactionLogger = (function() {
 		var timeString = hours + ":" + (minutes % 60) + ":" + (seconds % 60) + ":" + (millis % 1000);
 		
 		//viewPosition
-		var viewMatrix = viewArea.getViewMatrix();
-		var viewPosition = viewMatrix._03.toString().replace(".", ",") + ";" + viewMatrix._13.toString().replace(".", ",") + ";" + viewMatrix._23.toString().replace(".", ",");
-		
+		if(visMode != "aframe") {
+			var viewMatrix = viewArea.getViewMatrix();
+			var viewPosition = viewMatrix._03.toString().replace(".", ",") + ";" + viewMatrix._13.toString().replace(".", ",") + ";" + viewMatrix._23.toString().replace(".", ",");
+		}
 		var logString = timestamp +
 			";" + timeString + 
 			";" + aemt + 
@@ -158,8 +161,8 @@ var interactionLogger = (function() {
 			";" + targetZ + 
 			";" + duration + 
 			";" + mDistanceX + 
-			";" + mDistanceY +
-			";" + viewPosition
+			";" + mDistanceY;
+			if(visMode != "aframe") logString += ";" + viewPosition;
 				
 		if(controllerConfig.logOnServer){
 			logServer(logString);
