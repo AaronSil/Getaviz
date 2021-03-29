@@ -1,7 +1,7 @@
 var interactionLogger = (function() {
 	
 	var controllerConfig = {
-		serverURL : "http://localhost/interactionlogger/index.php",
+		serverURL : "http://" + window.location.host + "/scripts/InteractionLogger/index.php",
 		logOnConsole : false,
 	 	logOnServer : true,
 	}
