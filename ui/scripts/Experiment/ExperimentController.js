@@ -326,9 +326,7 @@ var experimentController = (function() {
 	}
 	
 	function logResult(taskText) {
-		var post = "";
-		post = "logFile=" + initialTime + "_ExpResults.txt" + "&" +
-					"logText=";
+		var post = "logFile=" + initialTime + "_ExpResults.txt" + "&" + "logText=";
 		
 		var timeStamp = new Date();
 		
