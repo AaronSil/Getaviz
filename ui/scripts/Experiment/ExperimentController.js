@@ -39,26 +39,31 @@ var experimentController = (function() {
 		//events
 		events.marked.on.subscribe(onEntityMarked);
 		events.marked.off.subscribe(onEntityMarked);
-		
-		//container div
-		experimentControllerDiv = document.createElement("DIV");
-		
+	}
+	
+	
+	function activate(parent){
+		parent.id = "experimentDiv";
 		//taskFieldText and solvedButton
 		var experimentHeaderDiv = document.createElement("DIV");
 		experimentHeaderDiv.id = "taskField";
-		experimentControllerDiv.appendChild(experimentHeaderDiv);
+		parent.appendChild(experimentHeaderDiv);
 		
 		var taskFieldTextDiv = document.createElement("DIV");
 		taskFieldTextDiv.id = "taskFieldText";
 		taskFieldTextDiv.innerHTML = "Step";
 		experimentHeaderDiv.appendChild(taskFieldTextDiv);
 		
+		var buttonDiv = document.createElement("DIV");
+		buttonDiv.id = "taskButtonDiv";
+		experimentHeaderDiv.appendChild(buttonDiv);
+		
 		var taskSolvedButton = document.createElement("INPUT");
 		taskSolvedButton.id = "taskSolvedButton";
 		taskSolvedButton.value = "Next";
 		taskSolvedButton.type = "button";		
-		experimentHeaderDiv.appendChild(taskSolvedButton);
-
+		buttonDiv.appendChild(taskSolvedButton);
+		
 		if(controllerConfig.showBackButton) {
             var backButton = document.createElement('INPUT');
             backButton.id = 'backButton';
@@ -71,7 +76,7 @@ var experimentController = (function() {
 		var taskDialogDiv = document.createElement("DIV");
 		taskDialogDiv.id = "taskDialog";
 		taskDialogDiv.style = "display:none";
-		experimentControllerDiv.appendChild(taskDialogDiv);
+		parent.appendChild(taskDialogDiv);
 		
 		var taskDialogTitleDiv = document.createElement("DIV");
 		taskDialogTitleDiv.innerHTML = "Step";
@@ -90,13 +95,6 @@ var experimentController = (function() {
 		taskDialogOkButton.value = "OK";
 		taskDialogOkButton.type = "button";		
 		taskDialogTextDiv.appendChild(taskDialogOkButton);	
-							
-	}
-	
-	
-	function activate(parent){
-		
-		parent.appendChild(experimentControllerDiv);
 		
 		//taskFieldText and solvedButton
 		$('#taskSolvedButton').jqxButton({ theme: 'metro' });
