@@ -33,8 +33,7 @@ var interactionLogger = (function() {
 	}
 
 	function activate(){
-
-		initialTime = Date.now();	
+		initialTime = Date.now();
 
 		var logString =  
 			"TIMESTAMP;" +
@@ -53,7 +52,7 @@ var interactionLogger = (function() {
 			"VIEWPOS-Y;" +
 			"VIEWPOS-Z;" +
 			"EVENT-TRIGGER;" +
-			"ACTION-TRIGGER;"			
+			"ACTION-TRIGGER;"
 		
 		if(controllerConfig.logOnServer){
 			logServer(logString);
@@ -82,7 +81,7 @@ var interactionLogger = (function() {
 
 	
 	function logConsole(logString){
-		console.log("INTERACTIONLOGGER;" + logString);			
+		console.log("INTERACTIONLOGGER;" + logString);
 	}
 	
 	function logServer(logString){
@@ -94,24 +93,23 @@ var interactionLogger = (function() {
 		}
 	}
 	
-	function logServerFlush(){
-		var post = 	"logFile=" + initialTime + ".csv" + "&" +
-					"logText=";
+	function logServerFlush() {
+		var post = "logFile=" + initialTime + ".csv" + "&" + "logText=";
 					
 		for(var i = 0; i < logStrings.length; i++) {			
 			
 			//Erste Zeile Uhrzeit ergänzen
 			if(logCounter == 1){
 				
-				var timeStemp = new Date();
+				var timeStamp = new Date();
 				
-				var year = timeStemp.getFullYear();
-				var month = timeStemp.getMonth() + 1;
-				var day = timeStemp.getDate();
-								
-				var seconds = timeStemp.getSeconds();
-				var minutes = timeStemp.getMinutes();
-				var hours  	= timeStemp.getHours();
+				var year  = timeStamp.getFullYear();
+				var month = timeStamp.getMonth() + 1;
+				var day   = timeStamp.getDate();
+				
+				var seconds = timeStamp.getSeconds();
+				var minutes = timeStamp.getMinutes();
+				var hours   = timeStamp.getHours();
 				
 				var timeString = day + "." + month + "." +year + " " + hours + ":" + minutes + ":" + seconds;
 				
@@ -121,8 +119,7 @@ var interactionLogger = (function() {
 			}
 			
 			logCounter++;
-		}		
-		
+		}
 		var xmlHttp = new XMLHttpRequest();
 		xmlHttp.open("POST", controllerConfig.serverURL, true);
 		xmlHttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
