@@ -1,5 +1,7 @@
 var experimentController = (function() {	
-		
+	
+	var initialTime;
+	
 	var experimentControllerDiv;
 	
 	var stepOrder;
@@ -12,9 +14,10 @@ var experimentController = (function() {
 	var stepTextTime = 0;
 
 	var controllerConfig = {
+		serverURL : "http://" + window.location.host + "/scripts/InteractionLogger/index.php",
 		showBackButton: false,
 		showSureButton: true,
-		showPopup: true,
+		showPopup: true
 	};
 
 
@@ -43,6 +46,8 @@ var experimentController = (function() {
 	
 	
 	function activate(parent){
+		initialTime = Date.now();
+		
 		parent.id = "experimentDiv";
 		//taskFieldText and solvedButton
 		var experimentHeaderDiv = document.createElement("DIV");
@@ -124,16 +129,15 @@ var experimentController = (function() {
 	
 	
 	function taskSolvedButtonClick(event) {
-
-        if ($("#taskSolvedButton")[0].value == "Next" && controllerConfig.showSureButton) {
-            $("#taskSolvedButton")[0].value = "Sure?"
-            setTimeout(resetSolvedButton, 3000);
-        } else {
-
-            nextStep();
-        }
-    }
-
+		if ($("#taskSolvedButton")[0].value == "Next" && controllerConfig.showSureButton) {
+				$("#taskSolvedButton")[0].value = "Sure?"
+				setTimeout(resetSolvedButton, 3000);
+		} else {
+			nextStep();
+		}
+		logResult(currentStep.text);
+	}
+	
 	function backButtonClick(event) {
 		previousStep();
 	}
@@ -323,12 +327,43 @@ var experimentController = (function() {
 	
 	}
 	
-    
-    
-    return {
-        initialize: initialize,
+	function logResult(taskText) {
+		var post = "";
+		post = "logFile=" + initialTime + "_ExpResults.txt" + "&" +
+					"logText=";
+		
+		var timeStamp = new Date();
+		
+		var year  = timeStamp.getFullYear();
+		var month = timeStamp.getMonth() + 1;
+		var day   = timeStamp.getDate();
+		
+		var seconds = timeStamp.getSeconds();
+		var minutes = timeStamp.getMinutes();
+		var hours   = timeStamp.getHours();
+		
+		var timeString = day + "." + month + "." +year + " " + hours + ":" + minutes + ":" + seconds;
+		
+		post += "Time: " + timeString + "\n";
+		post += "Task: " + taskText + "\n";
+		post += "Marked:\n"
+		Array.from(events.marked.getEntities().entries()).forEach(function(el) {
+			post += el[1].type + ","+ el[1].id + "," + el[1].qualifiedName + "\n";
+		});
+		post += "\n";
+		
+		var xmlHttp = new XMLHttpRequest();
+		xmlHttp.open("POST", controllerConfig.serverURL, true);
+		xmlHttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+		xmlHttp.send(post);
+		
+		logStrings = [];
+	}
+	
+	return {
+		initialize: initialize,
 		activate: activate
-    };
+	};
 }
 )();
 
