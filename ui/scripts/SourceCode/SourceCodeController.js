@@ -14,6 +14,7 @@ var sourceCodeController = (function(){
 		url: "",
 		showCodeWindowButton: true,
 		showCode: true,
+		localEnv: false
 	};
     
 	function initialize(setupConfig){
@@ -178,7 +179,9 @@ var sourceCodeController = (function(){
         if (controllerConfig.url === "") {
 						let package = file.replaceAll("/", ".").replace(/\.[^\.]+\.java/, "");
 						let className = file.match(/[^\/]+\.java$/)[0];
-						file = "../../" + modelUrl + "/../src/" + package + "/" + className + ".html";
+						let relPathPrefix = "";
+						if(controllerConfig.localEnv) relPathPrefix = "../../";
+						file = relPathPrefix + modelUrl + "/../src/" + package + "/" + className + ".html";
 //             file = "../../ui/" + modelUrl + "/src/" + file;
         } else {
             file = controllerConfig.url + file;

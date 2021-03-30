@@ -34,7 +34,6 @@ var codeHelperFunction =(function(){
 					} else if (fileType === "html") {
 						codeSubstring = codeTag.textContent.substring(codeTag.textContent.search(/package /, codeTag.textContent.search(/<\/body>/)));
 						codeTag.innerHTML = codeSubstring;
-						console.debug(codeTag);
 						textNodesToSpan();
 						highlightSelectedElement(entity);
 						addInteraction(classEntity, callBackFunction);
@@ -46,7 +45,6 @@ var codeHelperFunction =(function(){
 		};
 
 		xhttp.open("GET", file, true);
-		console.debug(xhttp);
 		xhttp.send();
     }
 
@@ -68,11 +66,10 @@ var codeHelperFunction =(function(){
     }
 
     // hebt alle Vorkommen des selektierten Elements besonders hervor 
-    function highlightSelectedElement(entity){   
+    function highlightSelectedElement(entity){
         if(typeof entity === "undefined") {
             return;
-        }
-        console.log(entity);        
+        }    
         if ( entity.type === "Attribute" ){                    
             var codeTag = $("#codeTag").get(0);
             var codeTagChilds = codeTag.childNodes;
@@ -83,7 +80,8 @@ var codeHelperFunction =(function(){
                 if( codeTagChilds[i].textContent.search(reg)>=0 && codeTagChilds[i].className === "" ){
                     codeTagChilds[i].className += " codeControllerHighlightAttribute";
                 }
-            }   
+            }
+            
 			$('html, body, pre, code').animate({
 					scrollTop: $($(".codeControllerHighlightAttribute")[0]).position().top - 100
 				}, 1000);							
