@@ -34,7 +34,6 @@ var codeHelperFunction =(function(){
 					} else if (fileType === "html") {
 						codeSubstring = codeTag.textContent.substring(codeTag.textContent.search(/package /, codeTag.textContent.search(/<\/body>/)));
 						codeTag.innerHTML = codeSubstring;
-						console.debug(codeTag);
 						textNodesToSpan();
 						highlightSelectedElement(entity);
 						addInteraction(classEntity, callBackFunction);
@@ -46,7 +45,6 @@ var codeHelperFunction =(function(){
 		};
 
 		xhttp.open("GET", file, true);
-		console.debug(xhttp);
 		xhttp.send();
     }
 
@@ -71,8 +69,7 @@ var codeHelperFunction =(function(){
     function highlightSelectedElement(entity){   
         if(typeof entity === "undefined") {
             return;
-        }
-        console.log(entity);        
+        }    
         if ( entity.type === "Attribute" ){                    
             var codeTag = $("#codeTag").get(0);
             var codeTagChilds = codeTag.childNodes;
