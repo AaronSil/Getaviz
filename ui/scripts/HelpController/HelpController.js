@@ -1,18 +1,18 @@
 var helpController = (function() {
     let controllerConfig = {
-        metaphor: "",
+        metaphor: ""
 	};
     
     function initialize(setupConfig){   
         application.transferConfigParams(setupConfig, controllerConfig);
     }
 
-	function activate(){
-        createHelpButton();
+	function activate(parent){
+        createHelpButton(parent);
         createHelpPopup();
     }
     
-    function createHelpButton(){
+    function createHelpButton(parent){
         var id = "jqxHelpButton";
         var jqxHelpButtonType = "button";
         var jqxHelpButton = document.createElement("BUTTON");
@@ -21,7 +21,11 @@ var helpController = (function() {
         jqxHelpButton.style = "float:right;";
         var text = document.createTextNode("Help");
         jqxHelpButton.appendChild(text);
-        $("ul.jqx-menu-ul")[0].appendChild(jqxHelpButton);
+				let menu = $("ul.jqx-menu-ul")
+        if(menu.length != 0) {
+					parent = menu[0];
+				}
+				parent.appendChild(jqxHelpButton);
         
         $("#jqxHelpButton").jqxButton({ 
             theme: "metro",

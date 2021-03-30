@@ -7,19 +7,23 @@ var shareController = (function() {
         application.transferConfigParams(setupConfig, controllerConfig);
     }    
 
-	function activate(){
-        createShareButton();
+	function activate(parent){
+        createShareButton(parent);
         createSharePopup();
 	}
 
-    function createShareButton(){
+    function createShareButton(parent){
         var jqxShareButton = document.createElement("BUTTON");
 		jqxShareButton.type = "button";
         jqxShareButton.id = "jqxShareButton";
         jqxShareButton.style = "float:right;";
         var text = document.createTextNode("Share");
         jqxShareButton.appendChild(text);
-        $("ul.jqx-menu-ul")[0].appendChild(jqxShareButton);
+        let menu = $("ul.jqx-menu-ul");
+				if(menu.length != 0) {
+					parent = menu[0];
+				}
+				parent.appendChild(jqxShareButton);
         
         $("#jqxShareButton").jqxButton({ 
             theme: "metro",

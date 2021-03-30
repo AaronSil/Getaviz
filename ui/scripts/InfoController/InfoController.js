@@ -10,12 +10,12 @@ var infoController = (function() {
         application.transferConfigParams(setupConfig, controllerConfig);
     }
 
-	function activate(){
-        createInfoButton();
+	function activate(parent){
+        createInfoButton(parent);
         createInfoPopup();
     }
     
-    function createInfoButton(){
+    function createInfoButton(parent){
         var id = "jqxInfoButton";
         var jqxInfoButtonType = "button";
         var jqxInfoButton = document.createElement("BUTTON");
@@ -24,7 +24,11 @@ var infoController = (function() {
         jqxInfoButton.style = "float:right;";
         var text = document.createTextNode("Info");
         jqxInfoButton.appendChild(text);
-        $("ul.jqx-menu-ul")[0].appendChild(jqxInfoButton);
+				let menu = $("ul.jqx-menu-ul");
+				if(menu.length != 0) {
+					parent = menu[0];
+				}
+				parent.appendChild(jqxInfoButton);
         
         $("#jqxInfoButton").jqxButton({ 
             theme: "metro",
