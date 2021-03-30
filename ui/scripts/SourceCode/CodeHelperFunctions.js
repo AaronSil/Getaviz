@@ -66,7 +66,7 @@ var codeHelperFunction =(function(){
     }
 
     // hebt alle Vorkommen des selektierten Elements besonders hervor 
-    function highlightSelectedElement(entity){   
+    function highlightSelectedElement(entity){
         if(typeof entity === "undefined") {
             return;
         }    
@@ -80,7 +80,8 @@ var codeHelperFunction =(function(){
                 if( codeTagChilds[i].textContent.search(reg)>=0 && codeTagChilds[i].className === "" ){
                     codeTagChilds[i].className += " codeControllerHighlightAttribute";
                 }
-            }   
+            }
+            
 			$('html, body, pre, code').animate({
 					scrollTop: $($(".codeControllerHighlightAttribute")[0]).position().top - 100
 				}, 1000);							
