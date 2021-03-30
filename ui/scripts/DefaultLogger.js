@@ -68,6 +68,7 @@ var defaultLogger = (function() {
 		}
 
 		if(controllerConfig.logErrorConsole){	
+			console.trace();
 			console.log("ERROR: " + logObject.text );
 		}		
 	}
