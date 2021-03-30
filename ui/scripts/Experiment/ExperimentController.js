@@ -1,5 +1,7 @@
 var experimentController = (function() {	
-		
+	
+	var initialTime;
+	
 	var experimentControllerDiv;
 	
 	var stepOrder;
@@ -10,26 +12,26 @@ var experimentController = (function() {
 	
 	var stepTime = 0;
 	var stepTextTime = 0;
-
+	
 	var controllerConfig = {
+		serverURL : "http://" + window.location.host + "/scripts/InteractionLogger/index.php",
 		showBackButton: false,
 		showSureButton: true,
-		showPopup: true,
+		showPopup: true
 	};
-
-
-    function initialize(setupConfig){
-
-        application.transferConfigParams(setupConfig, controllerConfig);
-
-        var cssLink = document.createElement("link");
+	
+	
+	function initialize(setupConfig) {
+		application.transferConfigParams(setupConfig, controllerConfig);
+		
+		var cssLink = document.createElement("link");
 		cssLink.type = "text/css";
 		cssLink.rel = "stylesheet";
 		cssLink.href = "scripts/Experiment/ec.css";
 		document.getElementsByTagName("head")[0].appendChild(cssLink);
-				
+		
 		//interactionLogger.logConfig(config.clickConnector, config.clickTransparency, config.taskOrder.toString());
-
+		
 		stepOrder = setupConfig.stepOrder;
 		steps = setupConfig.steps;
 		
@@ -39,39 +41,46 @@ var experimentController = (function() {
 		//events
 		events.marked.on.subscribe(onEntityMarked);
 		events.marked.off.subscribe(onEntityMarked);
+	}
+	
+	
+	function activate(parent){
+		initialTime = Date.now();
 		
-		//container div
-		experimentControllerDiv = document.createElement("DIV");
-		
+		parent.id = "experimentDiv";
 		//taskFieldText and solvedButton
 		var experimentHeaderDiv = document.createElement("DIV");
 		experimentHeaderDiv.id = "taskField";
-		experimentControllerDiv.appendChild(experimentHeaderDiv);
+		parent.appendChild(experimentHeaderDiv);
 		
 		var taskFieldTextDiv = document.createElement("DIV");
 		taskFieldTextDiv.id = "taskFieldText";
 		taskFieldTextDiv.innerHTML = "Step";
 		experimentHeaderDiv.appendChild(taskFieldTextDiv);
 		
+		var buttonDiv = document.createElement("DIV");
+		buttonDiv.id = "taskButtonDiv";
+		experimentHeaderDiv.appendChild(buttonDiv);
+		
 		var taskSolvedButton = document.createElement("INPUT");
 		taskSolvedButton.id = "taskSolvedButton";
 		taskSolvedButton.value = "Next";
 		taskSolvedButton.type = "button";		
-		experimentHeaderDiv.appendChild(taskSolvedButton);
-
+		buttonDiv.appendChild(taskSolvedButton);
+		
 		if(controllerConfig.showBackButton) {
-            var backButton = document.createElement('INPUT');
-            backButton.id = 'backButton';
-            backButton.value = 'Back';
-            backButton.type = 'button';
-            experimentHeaderDiv.appendChild(backButton);
-        }
+						var backButton = document.createElement('INPUT');
+						backButton.id = 'backButton';
+						backButton.value = 'Back';
+						backButton.type = 'button';
+						experimentHeaderDiv.appendChild(backButton);
+				}
 		
 		//taskdialog
 		var taskDialogDiv = document.createElement("DIV");
 		taskDialogDiv.id = "taskDialog";
 		taskDialogDiv.style = "display:none";
-		experimentControllerDiv.appendChild(taskDialogDiv);
+		parent.appendChild(taskDialogDiv);
 		
 		var taskDialogTitleDiv = document.createElement("DIV");
 		taskDialogTitleDiv.innerHTML = "Step";
@@ -90,22 +99,15 @@ var experimentController = (function() {
 		taskDialogOkButton.value = "OK";
 		taskDialogOkButton.type = "button";		
 		taskDialogTextDiv.appendChild(taskDialogOkButton);	
-							
-	}
-	
-	
-	function activate(parent){
-		
-		parent.appendChild(experimentControllerDiv);
 		
 		//taskFieldText and solvedButton
 		$('#taskSolvedButton').jqxButton({ theme: 'metro' });
 		$('#taskSolvedButton').click(taskSolvedButtonClick);
 
 		if(controllerConfig.showBackButton) {
-            $('#backButton').jqxButton({theme: 'metro'});
-            $('#backButton').click(backButtonClick);
-        }
+						$('#backButton').jqxButton({theme: 'metro'});
+						$('#backButton').click(backButtonClick);
+				}
 		
 		//taskdialog
 		$("#taskDialog").jqxWindow({ height: 1000, width: 700, theme: 'metro', isModal: true, autoOpen: false, resizable: false, showCloseButton: false, okButton: $('#button_ok') });
@@ -116,7 +118,7 @@ var experimentController = (function() {
 			}
 			$("#taskDialog").jqxWindow('close');
 		});
-						
+		
 		//initialize first step
 		setNextStep();
 		setStepTexts(currentStep.text, 100, 100, 1000, 300, stepTextTime);		
@@ -126,20 +128,19 @@ var experimentController = (function() {
 	
 	
 	function taskSolvedButtonClick(event) {
-
-        if ($("#taskSolvedButton")[0].value == "Next" && controllerConfig.showSureButton) {
-            $("#taskSolvedButton")[0].value = "Sure?"
-            setTimeout(resetSolvedButton, 3000);
-        } else {
-
-            nextStep();
-        }
-    }
-
+		if ($("#taskSolvedButton")[0].value == "Next" && controllerConfig.showSureButton) {
+				$("#taskSolvedButton")[0].value = "Sure?"
+				setTimeout(resetSolvedButton, 3000);
+		} else {
+			nextStep();
+		}
+		logResult(currentStep.text);
+	}
+	
 	function backButtonClick(event) {
 		previousStep();
 	}
-
+	
 	function resetSolvedButton() {
 		if ($('#taskSolvedButton')[0].value !== 'Next') $('#taskSolvedButton')[0].value = 'Next';
 	}
@@ -155,12 +156,12 @@ var experimentController = (function() {
 		
 	function previousStep() {
 		stopTaskTimer();
-
+		
 		setPreviousStep();
-
+		
 		setStepTexts(currentStep.text, 100, 100, 1000, 300, stepTextTime);
 	}
-		
+	
 	function setNextStep(){
 		
 		stepOrderIterator = stepOrderIterator + 1;
@@ -172,15 +173,14 @@ var experimentController = (function() {
 				currentStep = step;
 				return;
 			}
-		});		
+		});
 	}
 	
 	function setPreviousStep() {
 		if (stepOrderIterator > 1) {
 			stepOrderIterator = stepOrderIterator - 1;
-
 			var nextStepByStepOrder = stepOrder[stepOrderIterator - 1];
-
+			
 			steps.forEach(function(step) {
 				if (step.number == nextStepByStepOrder) {
 					currentStep = step;
@@ -198,8 +198,8 @@ var experimentController = (function() {
 			fullText = fullText + text + "<br/>";
 		});
 		if(controllerConfig.showPopup) {
-            showPopup(fullText, posx, posy, width, height, time);
-        }
+						showPopup(fullText, posx, posy, width, height, time);
+				}
 		setText(fullText);				
 	}
 	
@@ -247,7 +247,7 @@ var experimentController = (function() {
 	
 	
 	
-			
+	
 	
 	//timout after task time
 	//**********************
@@ -268,7 +268,7 @@ var experimentController = (function() {
 		}
 	}
 	
-		
+	
 	function startTaskTimer(timeoutInMin){
 		timeOutTime = Date.now() + ( timeoutInMin * 60 * 1000);	
 		taskTimerOn = true;
@@ -304,16 +304,16 @@ var experimentController = (function() {
 		
 		var taskEntitiesIds = currentStep.entities;			
 		
-		var	correctMarks = 0;			
+		var correctMarks = 0;
 		var falseMarks = 0;
-		var missingMarks = 0;			
+		var missingMarks = 0;
 		
 		for(var i = 0; i < taskEntitiesIds.length; i++) {				
 			if(markedEntites.has(taskEntitiesIds[i])){
 				correctMarks++;
 			} else {
 				missingMarks++;
-			}				
+			}
 		}
 		
 		falseMarks = markedEntites.size - correctMarks;
@@ -325,12 +325,41 @@ var experimentController = (function() {
 	
 	}
 	
-    
-    
-    return {
-        initialize: initialize,
+	function logResult(taskText) {
+		var post = "logFile=" + initialTime + "_ExpResults.txt" + "&" + "logText=";
+		
+		var timeStamp = new Date();
+		
+		var year  = timeStamp.getFullYear();
+		var month = timeStamp.getMonth() + 1;
+		var day   = timeStamp.getDate();
+		
+		var seconds = timeStamp.getSeconds();
+		var minutes = timeStamp.getMinutes();
+		var hours   = timeStamp.getHours();
+		
+		var timeString = day + "." + month + "." +year + " " + hours + ":" + minutes + ":" + seconds;
+		
+		post += "Time: " + timeString + "\n";
+		post += "Task: " + taskText + "\n";
+		post += "Marked:\n"
+		Array.from(events.marked.getEntities().entries()).forEach(function(el) {
+			post += el[1].type + ","+ el[1].id + "," + el[1].qualifiedName + "\n";
+		});
+		post += "\n";
+		
+		var xmlHttp = new XMLHttpRequest();
+		xmlHttp.open("POST", controllerConfig.serverURL, true);
+		xmlHttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+		xmlHttp.send(post);
+		
+		logStrings = [];
+	}
+	
+	return {
+		initialize: initialize,
 		activate: activate
-    };
+	};
 }
 )();
 

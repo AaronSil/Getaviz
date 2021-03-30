@@ -1,13 +1,15 @@
+#experimentDiv {
+	height: 100%;
+}
+
 #taskField {
 	width: 100%;
-	height: 140px;
+	height: 100%;
 	padding-top: 0px;
 }
 
 #taskFieldText {
-	position: absolute;
-	left: 0px;
-	right: 300px;
+	float: left;
 	line-height: 1;
 	white-space: normal;
 	font-size: 15px;
@@ -15,15 +17,30 @@
 	text-transform: uppercase;
 	margin: 0px;
 	padding: 10px;
-	height: 125px;
+	height: 100%;
+}
+
+#taskButtonDiv {
+	display: flex;
+	flex-direction: column-reverse;
+	float: right;
+	height: 100%;
 }
 
 #taskSolvedButton {
-	position: absolute;
+	padding: 1rem 2rem;
+	border-radius: 1rem;
+	border: solid #1faeff 0.125rem;
+	margin: 2rem;
+	/*position: absolute;
 	top: 0px;
 	right: 100px;
 	width: 200px;
-	height: 125px;
+	height: 125px;*/
+}
+
+#taskSolvedButton:hover {
+	cursor: pointer;
 }
 
 #backButton {
