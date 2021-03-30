@@ -4,7 +4,7 @@ var relationHighlightController = function(){
 	var activated = false;
 
     var controllerConfig = {
-        color : "black",
+        color : "#000000",
         unfadeOnHighlight : true
     };
 	
