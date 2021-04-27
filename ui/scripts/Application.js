@@ -35,6 +35,7 @@ function initializeApplication(metaDataJson){
 
 	actionController.initialize();
 	canvasManipulator.initialize();
+	colorController.initialize();
 
 	//initialize application
 	application.initialize();
