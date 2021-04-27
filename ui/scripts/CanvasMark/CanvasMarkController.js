@@ -46,10 +46,10 @@ var canvasMarkController = (function() {
     }
 		
 	function reset(){
-		//let markedEntities = events.marked.getEntities();
-        var markedEntities = events.marked.getEntities();
-		
-		canvasManipulator.resetColorOfEntities(markedEntities);	
+		var markedEntities = events.marked.getEntities();
+		markedEntities.forEach(function(entity) {
+			colorController.removeColorFromEntity(entity, "canvasMarkController");
+		});
 	}
 
 	//DUMMY
@@ -174,13 +174,13 @@ var canvasMarkController = (function() {
 			if(entity.hovered){
 				canvasManipulator.unhighlightEntities([entity]);
 			}
-			canvasManipulator.changeColorOfEntities([entity], controllerConfig.markingColor);
+			colorController.addColorToEntity(entity, controllerConfig.markingColor, "canvasMarkController");
 		});
 	}
 
 	function onEntityUnmarked(applicationEvent) {
 		applicationEvent.entities.forEach( function (entity) {
-			canvasManipulator.resetColorOfEntities([entity]);
+			colorController.removeColorFromEntity(entity, "canvasMarkController");
 		});
 	}
 
