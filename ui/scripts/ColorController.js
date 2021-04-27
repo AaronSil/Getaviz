@@ -50,7 +50,7 @@ var colorController = (function() {
 			updateVisibleColor(entity.id);
 		} else {
 			events.log.error.publish({ text: "Entity is undefined." });
-		)
+		}
 	}
 	
 	function updateVisibleColor(entityId) {
@@ -65,8 +65,8 @@ var colorController = (function() {
 		}
 	}
 	
-	function registerColorOwner(colorOwner) {
-		colorOwners.push(colorOwner);
+	function registerColorOwner(colorOwnerName) {
+		colorOwners.push(colorOwnerName);
 	}
 	
 // 	function
