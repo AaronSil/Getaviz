@@ -9,9 +9,11 @@ var relationHighlightController = function(){
     };
 	
 	function initialize(setupConfig){
-        application.transferConfigParams(setupConfig, controllerConfig);
-
-        events.selected.on.subscribe(onRelationsChanged);
+		application.transferConfigParams(setupConfig, controllerConfig);
+		
+		events.selected.on.subscribe(onRelationsChanged);
+		
+		colorController.registerColorOwner("relationHighlightController");
 	}
 	
 	function activate(){	
@@ -28,7 +30,9 @@ var relationHighlightController = function(){
 	}
 	
 	function reset(){
-		canvasManipulator.resetColorOfEntities(relatedEntities);
+		relatedEntities.forEach(function(entity) {
+			colorController.removeColorFromEntity(entity, "relationHighlightController");
+		});
 	}
 	
 	
@@ -52,7 +56,9 @@ var relationHighlightController = function(){
 			relatedEntitiesMap.set(relatedEntity, relatedEntity);
 		});
 
-		canvasManipulator.resetColorOfEntities(Array.from(relatedEntitiesMap.keys()));
+		Array.from(relatedEntitiesMap.keys()).forEach(function(entity) {
+			colorController.removeColorFromEntity(entity, "relationHighlightController");
+		});
 	}
 		
 	
@@ -119,7 +125,8 @@ var relationHighlightController = function(){
 		if(controllerConfig.unfadeOnHighlight) {
 			canvasManipulator.resetTransparencyOfEntities(Array.from(relatedEntitiesMap.keys()));
 		}
-		canvasManipulator.changeColorOfEntities(Array.from(relatedEntitiesMap.keys()), controllerConfig.color);
+		Array.from(relatedEntitiesMap.keys()).forEach(function(entity) { colorController.addColorToEntity(entity, controllerConfig.color, "relationHighlightController");
+		});
 	}
 
 		
