@@ -137,6 +137,7 @@ EOT;
 <script type="text/javascript" src="node_modules/prismjs/prism.js"></script>
 <script type="text/javascript" src="node_modules/prismjs/components/prism-java.js"></script>
 <script type="text/javascript" src="node_modules/prismjs/components/prism-c.js"></script>
+<script type="text/javascript" src="node_modules/chroma-js/chroma.min.js"></script>
 
 <link rel="stylesheet" href="node_modules/jqwidgets-scripts/jqwidgets/styles/jqx.base.css" type="text/css"/>
 <link rel="stylesheet" href="node_modules/jqwidgets-scripts/jqwidgets/styles/jqx.metro.css" type="text/css"/>
