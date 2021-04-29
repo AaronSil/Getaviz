@@ -145,9 +145,9 @@ var canvasHoverController = (function() {
 		}
 
 		if(entity.marked && entity.selected){
-			canvasManipulator.unhighlightEntities([entity]);	
+			colorController.removeHighlightFromEntity(entity, "canvasHoverController");	
 		} else {
-			canvasManipulator.highlightEntities([entity], controllerConfig.hoverColor);	
+			colorController.addHighlightToEntity(entity, "#ffffff", "canvasHoverController");
 		}
 		        
 		$("#tooltipName").text(getTooltipName(entity));
@@ -189,13 +189,13 @@ var canvasHoverController = (function() {
 		var entity = applicationEvent.entities[0];
 		
 		if(entity.marked && entity.selected){
-			canvasManipulator.highlightEntities([entity], controllerConfig.hoverColor);	
+			colorController.addHighlightToEntity(entity, "#ffffff", "canvasHoverController");
 		} else {
 			if(!entity.selected){
-				canvasManipulator.unhighlightEntities([entity]);			
+				colorController.removeHighlightFromEntity(entity, "canvasHoverController");
 			}
 			if(entity.type === "Namespace"){
-			    canvasManipulator.unhighlightEntities([entity]);
+			    colorController.removeHighlightFromEntity(entity, "canvasHoverController");
             }
         }
 		

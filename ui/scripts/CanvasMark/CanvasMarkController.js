@@ -171,9 +171,6 @@ var canvasMarkController = (function() {
 
 	function onEntityMarked(applicationEvent) {
 		applicationEvent.entities.forEach( function (entity) {
-			if(entity.hovered){
-				canvasManipulator.unhighlightEntities([entity]);
-			}
 			colorController.addColorToEntity(entity, controllerConfig.markingColor, "canvasMarkController");
 		});
 	}

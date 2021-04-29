@@ -176,7 +176,6 @@ var canvasSelectController = (function() {
 		}
 		
 		//higlight new selected entity
-// 		canvasManipulator.highlightEntities([entity], controllerConfig.color);		
 		colorController.addColorToEntity(entity, "#880000", "canvasSelectController");
 		//center of rotation
 		if(controllerConfig.setCenterOfRotation){
