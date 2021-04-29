@@ -13,6 +13,7 @@ var patternTransparencyController = (function() {
 		fullFadeValue : 0.85,
 		noFadeValue : 0.0,
 		startFaded: false,
+		color: "#ffffff",
 	};
 	var lastApplicationEvent = null;
 	
@@ -79,14 +80,16 @@ var patternTransparencyController = (function() {
     } 
 
 	function unfadeAll(){
-        var entities = model.getAllEntities();
+		var entities = model.getAllEntities();
 		canvasManipulator.changeTransparencyOfEntities(entities, controllerConfig.noFadeValue);
-        canvasManipulator.resetColorOfEntities(entities);
-        faded = false;
+		entities.forEach(function(entity) {
+			colorController.removeColorFromEntity(entity);
+		});
+		faded = false;
 		model.getAllEntities().forEach(function(entity){
 			entity.isTransparent = false;
 		});
-    }
+	}
 	
 	function addReachesAndReachedBy (entity) {
 		relatedEntities.push(entity);
@@ -189,26 +192,32 @@ var patternTransparencyController = (function() {
 	function fadeEntities(){
 		//first relation selected -> fade all entities
 		fadeAll();
-
-		//unfade parents of related entities
-        canvasManipulator.resetColorOfEntities(parents);
-        canvasManipulator.changeTransparencyOfEntities(parents, controllerConfig.noFadeValue);
 		
-        //unfade related entities
-        canvasManipulator.resetColorOfEntities(relatedEntities);
-        canvasManipulator.changeTransparencyOfEntities(relatedEntities, controllerConfig.noFadeValue);
+		//unfade parents of related entities
+		parents.forEach(function(entity) {
+			colorController.removeColorFromEntity(entity, "patternTransparencyController");
+		});
+		canvasManipulator.changeTransparencyOfEntities(parents, controllerConfig.noFadeValue);
+		
+		//unfade related entities
+		relatedEntities.forEach(function(entity) {
+			colorController.removeColorFromEntity(entity);
+		});
+		canvasManipulator.changeTransparencyOfEntities(relatedEntities, controllerConfig.noFadeValue);
 	}
 
 	function fadeAll(){
 		if(!faded) {
-            var entities = model.getAllEntities();
-            canvasManipulator.changeColorOfEntities(entities, "white");
-            canvasManipulator.changeTransparencyOfEntities(entities, controllerConfig.fullFadeValue);
-            faded = true;
-            model.getAllEntities().forEach(function (entity) {
-                entity.isTransparent = true;
-            });
-        }
+			var entities = model.getAllEntities();
+			entities.forEach(function(entity) {
+				colorController.addColorToEntity(entity, controllerConfig.color, "patternTransparencyController");
+			});
+			canvasManipulator.changeTransparencyOfEntities(entities, controllerConfig.fullFadeValue);
+			faded = true;
+			model.getAllEntities().forEach(function (entity) {
+					entity.isTransparent = true;
+			});
+		}
 	}
 	
 	 return {

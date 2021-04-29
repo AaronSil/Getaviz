@@ -20,6 +20,8 @@ var filterController = (function() {
 
 		// load entity positions
 		$.getJSON(multipartJsonUrl).done(data => RelationHelper.extractPositions(data, filter));
+		
+		colorController.registerOwner("patternTransparencyController");
 	}
 
 	function activate(rootDiv) {

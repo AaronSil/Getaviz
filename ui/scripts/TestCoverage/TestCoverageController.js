@@ -50,6 +50,7 @@ var testCoverageController = (function() {
 	
 	function initialize(setupConfig) {
 		application.transferConfigParams(setupConfig, controllerConfig);
+		colorController.registerOwner("testCoverageController");
 	}
 	
 	function activate(parent) {
@@ -354,7 +355,7 @@ var testCoverageController = (function() {
 		}
 
 		if(entity.marked && entity.selected) {
-			canvasManipulator.resetColor(entity);
+			colorController.removeColorFromEntity(entity, "testCoverageController");
 		} else if(controllerConfig.highlightOn == "HOVER") {
 			colorEntity(entity);
 		}
@@ -365,10 +366,10 @@ var testCoverageController = (function() {
 		
 		if(entity.marked && entity.selected) {
 		} else if(!entity.selected) {
-			canvasManipulator.resetColorOfEntities([entity]);
+			colorController.removeColorFromEntity(entity);
 		}
 		if(entity.type === "Namespace") {
-			canvasManipulator.resetColorOfEntities([entity]);
+			colorController.removeColorFromEntity(entity);
 		}
 	}
 	
@@ -399,8 +400,9 @@ var testCoverageController = (function() {
 			parent.removeChild(el);
 		});
 		effects = [];
-		let classes = model.getEntitiesByType("Namespace");
-		canvasManipulator.resetColorOfEntities(classes);
+		model.getEntitiesByType("Namespace").forEach(function(entity) {
+			colorController.removeColorFromEntity(entity, "testCoverageController");
+		});
 		switch(controllerConfig.highlightOn) {
 			case "ALWAYS":
 				controllerConfig.highlightOn = highlightModes.ALWAYS;
@@ -459,7 +461,7 @@ var testCoverageController = (function() {
 				}
 				hexString += color[el].toString(16);
 			}
-			canvasManipulator.changeColorOfEntities([entity], hexString);
+			colorController.addColorToEntity(entity, hexString, "testCoverageController");
 		}
 	}
 	
@@ -471,11 +473,14 @@ var testCoverageController = (function() {
 					if(el.testCoverage[controllerConfig.coverageType] <= threshold) {
 						colorEntity(el);
 					} else {
-						canvasManipulator.resetColorOfEntities([el]);
+						colorController.removeColorFromEntity(el, "testCoverageController");
 					}
 				}
 			});
-		} else {	canvasManipulator.resetColorOfEntities(model.getEntitiesByType("Namespace"));
+		} else {
+			model.getEntitiesByType("Namespace").forEach(function(entity) {
+				colorController.removeColorFromEntity(entity, "testCoverageController");
+			});
 		}
 		if(controllerConfig.colorClasses) {
 			model.getEntitiesByType("Class").forEach(function(el) {
@@ -486,12 +491,14 @@ var testCoverageController = (function() {
 							addGlyph([el]);
 						}
 					} else {
-						canvasManipulator.resetColorOfEntities([el]);
+						colorController.removeColorFromEntity(el, "testCoverageController");
 					}
 				}
 			});
 		} else {
-			canvasManipulator.resetColorOfEntities(model.getEntitiesByType("Class"));
+			model.getEntitiesByType("Class").forEach(function(entity) {
+				colorController.removeColorFromEntity(entity, "testCoverageController");
+			});
 		}
 	}
 	

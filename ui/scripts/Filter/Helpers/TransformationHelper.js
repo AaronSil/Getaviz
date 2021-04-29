@@ -10,7 +10,9 @@ class TransformationHelper {
 		canvasManipulator.unhighlightEntities(filter.visualizedEntities);
 
 		// reset color of relations & remove connectors
-		canvasManipulator.resetColorOfEntities(filter.visualizedEntities);
+		Array.from(filter.visualizedEntities).forEach(function(entity) {
+			colorController.removeColorFromEntity(entity, "transformationHelper");
+		});
 		RelationHelper.removeAddedElements();
 
 		// show all entities when filter is empty
@@ -66,7 +68,7 @@ class TransformationHelper {
 		if (entityIds.length < 1) return;
 
 		let fields = ['subTypes', 'superTypes', 'accessedBy', 'accesses', 'calls', 'calledBy'];
-		let color = '0 0.5 0.5';
+		let color = "#00b4b4";
 		let size = 0.5;
 		let skipCounter = 0;
 		let relationParticipants = [];
@@ -131,8 +133,9 @@ class TransformationHelper {
 		TransformationHelper.makeEntitiesVisible(relationParticipants);
 
 		// color relations
-		canvasManipulator.resetColorOfEntities(relationParticipants);
-		canvasManipulator.changeColorOfEntities(relationParticipants, color);
+		relationParticipants.forEach(function(entity) {
+			colorController.addColorToEntity(entity, color, "transformationHelper");
+		});
 
 		// add transform container to DOM
 		canvasManipulator.addElement(transformContainer);
