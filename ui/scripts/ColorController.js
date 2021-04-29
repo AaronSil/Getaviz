@@ -3,8 +3,8 @@ var colorController = (function() {
 	
 	var colorOwners = [
 		"canvasHoverController",
-		"canvasMarkController",
-		"canvasSelectController"
+		"canvasSelectController",
+		"canvasMarkController"
 	];
 	
 	var coloringMap = new Map();
