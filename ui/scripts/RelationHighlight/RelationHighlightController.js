@@ -13,7 +13,7 @@ var relationHighlightController = function(){
 		
 		events.selected.on.subscribe(onRelationsChanged);
 		
-		colorController.registerColorOwner("relationHighlightController");
+		colorController.registerOwner("relationHighlightController");
 	}
 	
 	function activate(){	

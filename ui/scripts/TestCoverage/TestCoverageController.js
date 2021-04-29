@@ -50,7 +50,7 @@ var testCoverageController = (function() {
 	
 	function initialize(setupConfig) {
 		application.transferConfigParams(setupConfig, controllerConfig);
-		colorController.registerColorOwner("testCoverageController");
+		colorController.registerOwner("testCoverageController");
 	}
 	
 	function activate(parent) {

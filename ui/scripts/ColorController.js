@@ -1,7 +1,6 @@
 var colorController = (function() {
-	// coloredEntities[entity] => {[{owner: blaController, color: "#234561"},]
 	
-	var colorOwners = [
+	var owners = [
 		"canvasHoverController",
 		"canvasSelectController",
 		"canvasMarkController"
@@ -79,7 +78,7 @@ var colorController = (function() {
 		let activeColor = "";
 		let activeHighlight = "";
 		let entity = model.getEntityById(entityId);
-		for(const [i, owner] of Object.entries(colorOwners)) {
+		for(const [i, owner] of Object.entries(owners)) {
 			if(activeColor == "" && entityColoring[owner]) {
 				activeColor = entityColoring[owner];
 			}
@@ -103,8 +102,8 @@ var colorController = (function() {
 		return mixedColor.hex();
 	}
 	
-	function registerColorOwner(colorOwnerName) {
-		colorOwners.push(colorOwnerName);
+	function registerOwner(ownerName) {
+		owners.push(ownerName);
 	}
 	
 	return {
@@ -114,7 +113,7 @@ var colorController = (function() {
 		
 		addColorToEntity: addColorToEntity,
 		removeColorFromEntity: removeColorFromEntity,
-		registerColorOwner: registerColorOwner,
+		registerOwner: registerOwner,
 		
 		addHighlightToEntity: addHighlightToEntity,
 		removeHighlightFromEntity: removeHighlightFromEntity
