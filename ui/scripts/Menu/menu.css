@@ -7,3 +7,13 @@
 }
 
 */
+
+.jqx-menu-ul>li::after {
+	content: "";
+	display: block;
+	background: url("../../node_modules/jqwidgets-scripts/jqwidgets/styles/images/icon-down-blue.png") no-repeat;
+	width: 20px;
+	height: 20px;
+	float: right;
+	margin: 0 0 0 4px;
+}
