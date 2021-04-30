@@ -46,7 +46,6 @@ var canvasManipulator = (function () {
     function changeTransparencyOfEntities(entities, value) {
         entities.forEach(function (entity2) {
             //  getting the entity again here, because without it the check if originalTransparency is defined fails sometimes
-						if(!entity2.id) console.debug(entity2);
             let entity = model.getEntityById(entity2.id);
             let component = document.getElementById(entity.id);
             if (component == undefined) {
@@ -197,14 +196,12 @@ var canvasManipulator = (function () {
     }
 
     function getElementIds() {
-        let sceneArray = Array.from(scene.children);
-        sceneArray.shift(); // so camera entity needs to be first in model.html
-        sceneArray.pop();  // last element is of class "a-canvas"
-        let elementIds = [];
-        sceneArray.forEach(function (object) {
-            elementIds.push(object.id);
-        });
-        return elementIds;
+				let sceneObjects = []
+				Array.from(AFRAME.scenes[0].children).forEach(function(el) {
+					if(el?.object3DMap?.mesh) sceneObjects.push(el);
+				});
+				console.debug(sceneObjects);
+				return sceneObjects;
     }
 
     return {
