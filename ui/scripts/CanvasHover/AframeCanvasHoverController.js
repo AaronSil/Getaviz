@@ -40,7 +40,7 @@ var canvasHoverController = (function() {
 			};
 
 			events.hovered.off.publish(unHoverEvent);	
-		});		
+		});	
 	}
 	
 	function createTooltipContainer(){
@@ -188,16 +188,7 @@ var canvasHoverController = (function() {
 	function onEntityUnhover(applicationEvent) {
 		var entity = applicationEvent.entities[0];
 		
-		if(entity.marked && entity.selected){
-			colorController.addHighlightToEntity(entity, "#ffffff", "canvasHoverController");
-		} else {
-			if(!entity.selected){
-				colorController.removeHighlightFromEntity(entity, "canvasHoverController");
-			}
-			if(entity.type === "Namespace"){
-			    colorController.removeHighlightFromEntity(entity, "canvasHoverController");
-            }
-        }
+		colorController.removeHighlightFromEntity(entity, "canvasHoverController");
 		
 		$("#tooltip").css("display", "none");
 
