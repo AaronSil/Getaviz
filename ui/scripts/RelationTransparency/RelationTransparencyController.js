@@ -50,24 +50,18 @@ var relationTransparencyController = (function() {
 		}
 		faded = false;
 	}
-
 	
 	function unfadeAll(){
 		//realy realy bad fix for one model where elements in scene but not in model...
 		//add an all elements functionality for canvasmanipulator anyway 
-		var allCanvasElementIds = canvasManipulator.getElementIds();
-		var allCanvasObjects = [];
-		allCanvasElementIds.forEach(function(canvasElementId){
-			allCanvasObjects.push({id:canvasElementId});
-		});
+		var allCanvasObjects = Array.from(canvasManipulator.getElementIds());
 
-		canvasManipulator.changeTransparencyOfEntities(allCanvasObjects, controllerConfig.noFadeValue);	
+		canvasManipulator.changeTransparencyOfEntities(model.getAllEntities(), controllerConfig.noFadeValue);	
 	}
 	
 	
 	
 	function onRelationsChanged(applicationEvent) {
-		
 		//fade old related entities and parents
 		if(activated){	
 			if(relatedEntities.length != 0){				
@@ -143,13 +137,8 @@ var relationTransparencyController = (function() {
 		if(!faded){			
 			//realy realy bad fix for one model where elements in scene but not in model...
 			//add an all elements functionality for canvasmanipulator anyway 
-			var allCanvasElementIds = canvasManipulator.getElementIds();
-			var allCanvasObjects = [];
-			allCanvasElementIds.forEach(function(canvasElementId){
-				allCanvasObjects.push({id:canvasElementId});
-			});
-
-
+			var allCanvasObjects = Array.from(canvasManipulator.getElementIds());
+			
 			canvasManipulator.changeTransparencyOfEntities(allCanvasObjects, controllerConfig.fullFadeValue);
 			faded = true;
 		}
