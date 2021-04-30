@@ -1,13 +1,3 @@
-
-/*
-#menuDiv{
-    margin: auto;
-    width: 80%;
-    text-align: center;
-}
-
-*/
-
 .jqx-menu-ul>li::after {
 	content: "";
 	display: block;
