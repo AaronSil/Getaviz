@@ -257,8 +257,7 @@ var testCoverageController = (function() {
 		container.appendChild(classesCheckbox);
 		$("#classesCheckbox").jqxCheckBox({ checked: controllerConfig.colorClasses });
 		$("#classesCheckbox").bind('change', function (event) {
-			controllerConfig.colorClasses = event.args.checked;
-			reapplyColors();
+			toggleColorClasses();
 		});
 		let packagesCheckbox = document.createElement("div");
 		packagesCheckbox.id = "packagesCheckbox";
@@ -267,8 +266,7 @@ var testCoverageController = (function() {
 		container.appendChild(packagesCheckbox);
 		$("#packagesCheckbox").jqxCheckBox({ checked: controllerConfig.colorNamespaces });
 		$("#packagesCheckbox").bind('change', function (event) {
-			controllerConfig.colorNamespaces = event.args.checked;
-			reapplyColors();
+			toggleColorNamespaces();
 		});
 		
 		if(controllerConfig.spheresCheckboxes) {
@@ -286,9 +284,7 @@ var testCoverageController = (function() {
 			container.appendChild(classSpheresCheckbox);
 			$("#classSpheresCheckbox").jqxCheckBox({ checked: controllerConfig.colorClasses });
 			$("#classSpheresCheckbox").bind('change', function (event) {
-				controllerConfig.classSpheres = event.args.checked;
-				
-				reapplyColors();
+				toggleClassSpheres();
 			});
 			
 			let packageSpheresCheckbox = document.createElement("div");
@@ -298,9 +294,7 @@ var testCoverageController = (function() {
 			container.appendChild(packageSpheresCheckbox);
 			$("#packageSpheresCheckbox").jqxCheckBox({ checked: controllerConfig.packageSpheres });
 			$("#packageSpheresCheckbox").bind('change', function (event) {
-				controllerConfig.packageSpheres = event.args.checked;
-				
-				reapplyColors();
+				togglePackageSpheres();
 			});
 		}
 		
@@ -599,6 +593,26 @@ var testCoverageController = (function() {
 				console.debug(pkg);
 			}
 		});
+	}
+	
+	function toggleColorClasses() {
+		controllerConfig.colorClasses = !controllerConfig.colorClasses;
+		reapplyColors();
+	}
+	
+	function toggleColorPackages() {
+		controllerConfig.colorNamespaces = !controllerConfig.colorNamespaces;
+		reapplyColors();
+	}
+	
+	function toggleClassSpheres() {
+		controllerConfig.classSpheres = !controllerConfig.classSpheres;
+		reapplyColors();
+	}
+	
+	function togglePackageSpheres() {
+		controllerConfig.packageSpheres = !controllerConfig.packageSpheres;
+		reapplyColors();
 	}
 	
 	
