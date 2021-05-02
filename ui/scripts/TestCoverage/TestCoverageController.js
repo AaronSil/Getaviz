@@ -618,5 +618,12 @@ var testCoverageController = (function() {
 	return {
 		initialize: initialize,
 		activate: activate,
-	}
+		
+		setCoverageType: setCoverageType,
+		setThreshold: setThreshold,
+		toggleColorClasses: toggleColorClasses,
+		toggleColorPackages: toggleColorPackages,
+		toggleClassSpheres: toggleClassSpheres,
+		togglePackageSpheres: togglePackageSpheres
+	};
 })();
