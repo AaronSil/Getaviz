@@ -83,6 +83,7 @@ var testCoverageController = (function() {
 			
 		}
 		createUI(parent);
+		reapplyColors();
 	}
 	
 	function createUI(parent) {
