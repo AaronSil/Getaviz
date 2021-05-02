@@ -134,10 +134,9 @@ var testCoverageController = (function() {
 		});
 		
 		$("#thresholdInput").on("change", function(event) {
-			if(typeof(event.args) != "undefined") {
-				if(typeof(Number(event.args.value)) != "NaN") {
-					controllerConfig.threshold = event.args.value;
-					reapplyColors();
+			if(event.args) {
+				if(typeof(Number(event.args?.value)) != "NaN" && event.args?.value != controllerConfig.threshold) {
+					setThreshold(event.args.value);
 				}
 			}
 		});
@@ -599,6 +598,13 @@ var testCoverageController = (function() {
 				$("#elementCoverageBar").jqxProgressBar({value: parseInt(100 * entity.testCoverage[controllerConfig.coverageType]), colorRanges: colorRanges});
 			}
 		}
+	}
+	
+	function setThreshold(threshold) {
+		let inputField = $("#thresholdInput");
+		controllerConfig.threshold = threshold;
+		if(inputField.length != 0) inputField.val(controllerConfig.threshold);
+		reapplyColors();
 	}
 	
 	function toggleColorClasses() {
