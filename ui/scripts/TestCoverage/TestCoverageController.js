@@ -209,37 +209,7 @@ var testCoverageController = (function() {
 			
 			$("#typeDropdown").on("select", function(event) {
 				let item = $("#typeDropdown").jqxDropDownList("getSelectedItem");
-				switch(item.value) {
-					case "statementCoverage":
-						controllerConfig.coverageType = coverageType.STATEMENT;
-						reapplyColors();
-						break;
-					case "branchCoverage":
-						controllerConfig.coverageType = coverageType.BRANCH;
-						reapplyColors();
-						break;
-					case "lineCoverage":
-						controllerConfig.coverageType = coverageType.LINE;
-						reapplyColors();
-						break;
-					case "complexityCoverage":
-						controllerConfig.coverageType = coverageType.COMPLEXITY;
-						break;
-					case "methodCoverage":
-						controllerConfig.coverageType = coverageType.METHOD;
-						reapplyColors();
-						break;
-					default:
-						console.debug("Unknown coverage type.");
-						break;
-				}
-				let coverage = selectedEntity.testCoverage[controllerConfig.coverageType];
-				let color = calculateColor(coverage);
-				let hexString = rgbToHex(color);
-				let colorRanges = [ { stop: 100, color: hexString } ];
-				$("#elementCoverageBar").jqxProgressBar({value: parseInt(100 * coverage), colorRanges: colorRanges});
-				$("#elementCoverageBar").jqxProgressBar({value: parseInt(100 * coverage), colorRanges: colorRanges});
-				reapplyColors();
+				setCoverageType(item.value);
 			});
 		}
 		
@@ -598,6 +568,23 @@ var testCoverageController = (function() {
 				$("#elementCoverageBar").jqxProgressBar({value: parseInt(100 * entity.testCoverage[controllerConfig.coverageType]), colorRanges: colorRanges});
 			}
 		}
+	}
+	
+	function setCoverageType(typeOrIndex) {
+		if(typeof typeOrIndex == "number") {
+			typeOrIndex = Object.values(coverageType)[typeOrIndex];
+		}
+		controllerConfig.coverageType = typeOrIndex;
+		let typeDropdown = $("#typeDropdown");
+		if(typeDropdown.length != 0) {
+			let selected = 0;
+			selected = ($("#typeDropdown").jqxDropDownList("getItemByValue", typeOrIndex));
+			selected = selected.index;
+			$("#typeDropdown").jqxDropDownList("selectIndex", selected);
+		}
+		reapplyColors();
+		updateCoverageBar();
+		return "Code coverage type set to " + typeOrIndex;
 	}
 	
 	function setThreshold(threshold) {
