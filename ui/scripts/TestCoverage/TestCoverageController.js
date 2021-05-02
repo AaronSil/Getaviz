@@ -83,6 +83,7 @@ var testCoverageController = (function() {
 			
 		}
 		createUI(parent);
+		reapplyColors();
 	}
 	
 	function createUI(parent) {
@@ -133,10 +134,9 @@ var testCoverageController = (function() {
 		});
 		
 		$("#thresholdInput").on("change", function(event) {
-			if(typeof(event.args) != "undefined") {
-				if(typeof(Number(event.args.value)) != "NaN") {
-					controllerConfig.threshold = event.args.value;
-					reapplyColors();
+			if(event.args) {
+				if(typeof(Number(event.args?.value)) != "NaN" && event.args?.value != controllerConfig.threshold) {
+					setThreshold(event.args.value);
 				}
 			}
 		});
@@ -209,37 +209,7 @@ var testCoverageController = (function() {
 			
 			$("#typeDropdown").on("select", function(event) {
 				let item = $("#typeDropdown").jqxDropDownList("getSelectedItem");
-				switch(item.value) {
-					case "statementCoverage":
-						controllerConfig.coverageType = coverageType.STATEMENT;
-						reapplyColors();
-						break;
-					case "branchCoverage":
-						controllerConfig.coverageType = coverageType.BRANCH;
-						reapplyColors();
-						break;
-					case "lineCoverage":
-						controllerConfig.coverageType = coverageType.LINE;
-						reapplyColors();
-						break;
-					case "complexityCoverage":
-						controllerConfig.coverageType = coverageType.COMPLEXITY;
-						break;
-					case "methodCoverage":
-						controllerConfig.coverageType = coverageType.METHOD;
-						reapplyColors();
-						break;
-					default:
-						console.debug("Unknown coverage type.");
-						break;
-				}
-				let coverage = selectedEntity.testCoverage[controllerConfig.coverageType];
-				let color = calculateColor(coverage);
-				let hexString = rgbToHex(color);
-				let colorRanges = [ { stop: 100, color: hexString } ];
-				$("#elementCoverageBar").jqxProgressBar({value: parseInt(100 * coverage), colorRanges: colorRanges});
-				$("#elementCoverageBar").jqxProgressBar({value: parseInt(100 * coverage), colorRanges: colorRanges});
-				reapplyColors();
+				setCoverageType(item.value);
 			});
 		}
 		
@@ -257,8 +227,7 @@ var testCoverageController = (function() {
 		container.appendChild(classesCheckbox);
 		$("#classesCheckbox").jqxCheckBox({ checked: controllerConfig.colorClasses });
 		$("#classesCheckbox").bind('change', function (event) {
-			controllerConfig.colorClasses = event.args.checked;
-			reapplyColors();
+			toggleColorClasses();
 		});
 		let packagesCheckbox = document.createElement("div");
 		packagesCheckbox.id = "packagesCheckbox";
@@ -267,8 +236,7 @@ var testCoverageController = (function() {
 		container.appendChild(packagesCheckbox);
 		$("#packagesCheckbox").jqxCheckBox({ checked: controllerConfig.colorNamespaces });
 		$("#packagesCheckbox").bind('change', function (event) {
-			controllerConfig.colorNamespaces = event.args.checked;
-			reapplyColors();
+			toggleColorNamespaces();
 		});
 		
 		if(controllerConfig.spheresCheckboxes) {
@@ -286,9 +254,7 @@ var testCoverageController = (function() {
 			container.appendChild(classSpheresCheckbox);
 			$("#classSpheresCheckbox").jqxCheckBox({ checked: controllerConfig.colorClasses });
 			$("#classSpheresCheckbox").bind('change', function (event) {
-				controllerConfig.classSpheres = event.args.checked;
-				
-				reapplyColors();
+				toggleClassSpheres();
 			});
 			
 			let packageSpheresCheckbox = document.createElement("div");
@@ -298,9 +264,7 @@ var testCoverageController = (function() {
 			container.appendChild(packageSpheresCheckbox);
 			$("#packageSpheresCheckbox").jqxCheckBox({ checked: controllerConfig.packageSpheres });
 			$("#packageSpheresCheckbox").bind('change', function (event) {
-				controllerConfig.packageSpheres = event.args.checked;
-				
-				reapplyColors();
+				togglePackageSpheres();
 			});
 		}
 		
@@ -375,20 +339,7 @@ var testCoverageController = (function() {
 	
 	function onEntitySelected(applicationEvent) {
 		var entity = applicationEvent.entities[0];
-		
-		if(entity.type !== "Class" && entity.type !== "Namespace") {
- 			entity = model.getEntityById(entity.belongsTo.id);
-			
-			
-		}
-		if(typeof(entity.testCoverage[controllerConfig.coverageType]) !== "undefined" && controllerConfig.ui) {
-			selectedEntity = entity;
-			document.getElementById("elementNameText").innerText = entity.qualifiedName;
-			let color = calculateColor(entity.testCoverage[controllerConfig.coverageType]);
-			let hexString = rgbToHex(color);
-			let colorRanges = [ { stop: 100, color: hexString } ];
-			$("#elementCoverageBar").jqxProgressBar({value: parseInt(100 * entity.testCoverage[controllerConfig.coverageType]), colorRanges: colorRanges});
-		}	
+		updateCoverageBar(entity);
 	}
 	
 	function onEntityUnselected(applicationEvent) {
@@ -601,9 +552,78 @@ var testCoverageController = (function() {
 		});
 	}
 	
+	function updateCoverageBar(entity) {
+		if($("#elementCoverageBar").length != 0) {
+			if(entity == undefined) entity = model.getEntityById(Array.from(events.selected.getEntities())[0][0]);
+			if(entity == undefined) return;
+			if(entity.type !== "Class" && entity.type !== "Namespace") {
+				entity = model.getEntityById(entity.belongsTo.id);
+			}
+			if(typeof(entity.testCoverage[controllerConfig.coverageType]) !== "undefined" && controllerConfig.ui) {
+				selectedEntity = entity;
+				document.getElementById("elementNameText").innerText = entity.qualifiedName;
+				let color = calculateColor(entity.testCoverage[controllerConfig.coverageType]);
+				let hexString = rgbToHex(color);
+				let colorRanges = [ { stop: 100, color: hexString } ];
+				$("#elementCoverageBar").jqxProgressBar({value: parseInt(100 * entity.testCoverage[controllerConfig.coverageType]), colorRanges: colorRanges});
+			}
+		}
+	}
+	
+	function setCoverageType(typeOrIndex) {
+		if(typeof typeOrIndex == "number") {
+			typeOrIndex = Object.values(coverageType)[typeOrIndex];
+		}
+		controllerConfig.coverageType = typeOrIndex;
+		let typeDropdown = $("#typeDropdown");
+		if(typeDropdown.length != 0) {
+			let selected = 0;
+			selected = ($("#typeDropdown").jqxDropDownList("getItemByValue", typeOrIndex));
+			selected = selected.index;
+			$("#typeDropdown").jqxDropDownList("selectIndex", selected);
+		}
+		reapplyColors();
+		updateCoverageBar();
+		return "Code coverage type set to " + typeOrIndex;
+	}
+	
+	function setThreshold(threshold) {
+		let inputField = $("#thresholdInput");
+		controllerConfig.threshold = threshold;
+		if(inputField.length != 0) inputField.val(controllerConfig.threshold);
+		reapplyColors();
+	}
+	
+	function toggleColorClasses() {
+		controllerConfig.colorClasses = !controllerConfig.colorClasses;
+		reapplyColors();
+	}
+	
+	function toggleColorPackages() {
+		controllerConfig.colorNamespaces = !controllerConfig.colorNamespaces;
+		reapplyColors();
+	}
+	
+	function toggleClassSpheres() {
+		controllerConfig.classSpheres = !controllerConfig.classSpheres;
+		reapplyColors();
+	}
+	
+	function togglePackageSpheres() {
+		controllerConfig.packageSpheres = !controllerConfig.packageSpheres;
+		reapplyColors();
+	}
+	
 	
 	return {
 		initialize: initialize,
 		activate: activate,
-	}
+		
+		setCoverageType: setCoverageType,
+		setThreshold: setThreshold,
+		toggleColorClasses: toggleColorClasses,
+		toggleColorPackages: toggleColorPackages,
+		toggleClassSpheres: toggleClassSpheres,
+		togglePackageSpheres: togglePackageSpheres
+	};
 })();
