@@ -370,20 +370,7 @@ var testCoverageController = (function() {
 	
 	function onEntitySelected(applicationEvent) {
 		var entity = applicationEvent.entities[0];
-		
-		if(entity.type !== "Class" && entity.type !== "Namespace") {
- 			entity = model.getEntityById(entity.belongsTo.id);
-			
-			
-		}
-		if(typeof(entity.testCoverage[controllerConfig.coverageType]) !== "undefined" && controllerConfig.ui) {
-			selectedEntity = entity;
-			document.getElementById("elementNameText").innerText = entity.qualifiedName;
-			let color = calculateColor(entity.testCoverage[controllerConfig.coverageType]);
-			let hexString = rgbToHex(color);
-			let colorRanges = [ { stop: 100, color: hexString } ];
-			$("#elementCoverageBar").jqxProgressBar({value: parseInt(100 * entity.testCoverage[controllerConfig.coverageType]), colorRanges: colorRanges});
-		}	
+		updateCoverageBar(entity);
 	}
 	
 	function onEntityUnselected(applicationEvent) {
@@ -594,6 +581,24 @@ var testCoverageController = (function() {
 				console.debug(pkg);
 			}
 		});
+	}
+	
+	function updateCoverageBar(entity) {
+		if($("#elementCoverageBar").length != 0) {
+			if(entity == undefined) entity = model.getEntityById(Array.from(events.selected.getEntities())[0][0]);
+			if(entity == undefined) return;
+			if(entity.type !== "Class" && entity.type !== "Namespace") {
+				entity = model.getEntityById(entity.belongsTo.id);
+			}
+			if(typeof(entity.testCoverage[controllerConfig.coverageType]) !== "undefined" && controllerConfig.ui) {
+				selectedEntity = entity;
+				document.getElementById("elementNameText").innerText = entity.qualifiedName;
+				let color = calculateColor(entity.testCoverage[controllerConfig.coverageType]);
+				let hexString = rgbToHex(color);
+				let colorRanges = [ { stop: 100, color: hexString } ];
+				$("#elementCoverageBar").jqxProgressBar({value: parseInt(100 * entity.testCoverage[controllerConfig.coverageType]), colorRanges: colorRanges});
+			}
+		}
 	}
 	
 	function toggleColorClasses() {
