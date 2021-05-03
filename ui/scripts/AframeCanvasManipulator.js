@@ -49,7 +49,7 @@ var canvasManipulator = (function () {
             let entity = model.getEntityById(entity2.id);
             let component = document.getElementById(entity.id);
             if (component == undefined) {
-                events.log.error.publish({text: "CanvasManipualtor - changeTransparencyOfEntities - components for entityIds not found"});
+                events.log.error.publish({text: "CanvasManipualtor - changeTransparencyOfEntities - components for " + entity.id + " not found"});
                 return;
             }
             if (entity.originalTransparency === undefined) {
@@ -197,10 +197,13 @@ var canvasManipulator = (function () {
 
     function getElementIds() {
 				let sceneObjects = []
-				Array.from(AFRAME.scenes[0].children).forEach(function(el) {
-					if(el?.object3DMap?.mesh) sceneObjects.push(el);
-				});
-				console.debug(sceneObjects);
+				sceneObjects = sceneObjects.concat(model.getEntitiesByType("Class"));
+				sceneObjects = sceneObjects.concat(model.getEntitiesByType("Namespace"));
+				sceneObjects = sceneObjects.concat(model.getEntitiesByType("Method"));
+				sceneObjects = sceneObjects.concat(model.getEntitiesByType("Attribute"));
+// 				Array.from(AFRAME.scenes[0].children).forEach(function(el) {
+// 					if(el?.object3DMap?.mesh) sceneObjects.push(el);
+// 				});
 				return sceneObjects;
     }
 
