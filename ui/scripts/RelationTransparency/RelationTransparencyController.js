@@ -3,7 +3,6 @@ var relationTransparencyController = (function() {
 	var relatedEntities = new Array();
 	var parents = new Array();
 
-	var activated = false;
 	var faded = false;
 	
 	//config parameters	
@@ -11,7 +10,8 @@ var relationTransparencyController = (function() {
 		fullFadeValue : 0.85,
 		halfFadeValue : 0.55,
 		noFadeValue : 0,
-		startFaded: false
+		startFaded: false,
+		activated: true
 	};
 		
 		
@@ -28,10 +28,10 @@ var relationTransparencyController = (function() {
     }
 	
 	function activate(){
-		activated = true;	
+		controllerConfig.activated = true;	
 		
 		if(controllerConfig.startFaded){
-			setTimeout(fadeAll, 1000);			
+			setTimeout(fadeAll, 1000);
 		}
 
 		if(relatedEntities.length != 0){			
@@ -41,7 +41,7 @@ var relationTransparencyController = (function() {
 
 	function deactivate(){
 		reset();
-		activated = false;
+		controllerConfig.activated = false;
 	}
 
 	function reset(){
@@ -63,7 +63,7 @@ var relationTransparencyController = (function() {
 	
 	function onRelationsChanged(applicationEvent) {
 		//fade old related entities and parents
-		if(activated){	
+		if(controllerConfig.activated){	
 			if(relatedEntities.length != 0){				
 				canvasManipulator.changeTransparencyOfEntities(relatedEntities, controllerConfig.fullFadeValue);		
 			}			
@@ -111,10 +111,8 @@ var relationTransparencyController = (function() {
 			parents = parents.concat(relatedEntity.allParents);
 		});
 
-
-
-		if(activated){
-			fadeEntities();
+		if(controllerConfig.activated){
+			fadeEntities(entity);
 		}
 		
     }	
