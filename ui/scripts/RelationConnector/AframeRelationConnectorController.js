@@ -5,9 +5,6 @@ var relationConnectorController = function(){
 	
 	var connectors = new Array();
 	var relations = new Array();
-
-	var activated = false;
-	
 	
 	//config parameters	
 	var controllerConfig = {
@@ -20,7 +17,8 @@ var relationConnectorController = function(){
 		targetEndAtBorder: false,
 		createEndpoints : false,
 		connectorColor : {r: 1, g: 0, b: 0},
-		endpointColor : {r: 0, g: 0, b: 0}
+		endpointColor : {r: 0, g: 0, b: 0},
+		activated : false
 	}
 	
 	
@@ -32,7 +30,7 @@ var relationConnectorController = function(){
 	}
 	
 	function activate(){	
-		activated = true;
+		controllerConfig.activated = true;
 		if(relatedEntities.length != 0){
 			createRelatedConnections();
 		}
@@ -40,7 +38,7 @@ var relationConnectorController = function(){
 
 	function deactivate(){
 		reset();
-		activated = false;
+		controllerConfig.activated = false;
 	}
 	
 	function reset(){
@@ -121,7 +119,7 @@ var relationConnectorController = function(){
 			return;
 		}
 
-		if(activated){
+		if(controllerConfig.activated){
 			createRelatedConnections();
 		}
 		
