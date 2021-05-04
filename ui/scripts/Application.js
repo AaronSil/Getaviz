@@ -270,12 +270,14 @@ var application = (function() {
 				var expanderName = configName + "_" + expander.name;
 				var expanderId = "#" + expanderName;
 				var expanderTitle = expander.title;
+				var size = expander.size ? expander.size : "100%";
 				
 				var expanderObject = createExpander(expanderName, expanderTitle);
+				expanderObject.expander.style="position: relative;";
 				
 				parent.appendChild(expanderObject.expander);
 				
-				$(expanderId).jqxExpander({theme: "metro", width: "100%", height: "100%"});
+				$(expanderId).jqxExpander({theme: "metro", width: "100%", height: size});
 
 				//pars expander parts as config parts
 				var expanderContent = document.createElement("DIV");
