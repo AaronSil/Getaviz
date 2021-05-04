@@ -8,7 +8,7 @@ var relationTransparencyController = (function() {
 	//config parameters	
 	var controllerConfig = {
 		fullFadeValue : 0.85,
-		halfFadeValue : 0.55,
+		halfFadeValue : 0.05,
 		noFadeValue : 0,
 		startFaded: false,
 		activated: true
