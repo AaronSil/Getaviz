@@ -163,11 +163,11 @@ var menuController = (function() {
 			if(mapping.checked){
 				mapping.checked = false;
 				$(mapping.jQId).jqxCheckBox("uncheck"); 
-				executeFunctionByName(mapping.eventOff, window, ""); 
+				executeFunction(mapping.eventOff)
 			} else {
 				mapping.checked = true;
 				$(mapping.jQId).jqxCheckBox("check"); 
-				executeFunctionByName(mapping.eventOn, window, "");
+				executeFunction(mapping.eventOn);
 			}
 			return;
 		}
@@ -176,11 +176,11 @@ var menuController = (function() {
 			if(mapping.toggled){
 				mapping.toggled = false;
 				//$(mapping.jQId)[0].value = mapping.title + " OFF";	
-				executeFunctionByName(mapping.eventOff, window, ""); 
+				executeFunction(mapping.eventOff);
 			} else {
 				mapping.toggled = true;
 				//$(mapping.jQId)[0].value = mapping.title + " ON";	
-				executeFunctionByName(mapping.eventOn, window, "");
+				executeFunction(mapping.eventOn);
 			}
 
 			return;				
@@ -202,21 +202,15 @@ var menuController = (function() {
 			$(popupJQId).jqxWindow("open");
 		}
 		
-		executeFunctionByName(mapping.event, window, "");
+		executeFunction(mapping.event);
 		
 	}
 
 
 
 	//Helper to call function by string
-	function executeFunctionByName(functionName, context /*, args */) {
-		var args = [].slice.call(arguments).splice(2);
-		var namespaces = functionName.split(".");
-		var func = namespaces.pop();
-		for(var i = 0; i < namespaces.length; i++) {
-			context = context[namespaces[i]];
-		}
-		return context[func].apply(context, args);
+	function executeFunction(func) {
+		func.apply();
 	}
 
 
