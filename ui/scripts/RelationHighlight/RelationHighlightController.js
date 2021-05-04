@@ -1,12 +1,12 @@
 var relationHighlightController = function(){
-		
+	
 	var relatedEntities = new Array();
-	var activated = false;
-
-    var controllerConfig = {
-        color : "#000000",
-        unfadeOnHighlight : true
-    };
+	
+	var controllerConfig = {
+		color : "#000000",
+		unfadeOnHighlight : true,
+		activated : false
+	};
 	
 	function initialize(setupConfig){
 		application.transferConfigParams(setupConfig, controllerConfig);
@@ -18,15 +18,17 @@ var relationHighlightController = function(){
 	
 	function activate(){	
 		
-		activated = true;
-		if(relatedEntities.length != 0){
-			highlightRelatedEntities();
-		}
 	}
-
-	function deactivate(){	
-		reset();
-		activated = false;
+	
+	function toggleController(){
+		controllerConfig.activated = !controllerConfig.activated;
+		if(controllerConfig.activated) {
+			if(relatedEntities.length != 0){
+				highlightRelatedEntities();
+			}
+		} else {
+			reset();
+		}
 	}
 	
 	function reset(){
@@ -35,12 +37,11 @@ var relationHighlightController = function(){
 		});
 	}
 	
-	
 	function resetColor(){
 		if(relatedEntities.length == 0){	
 			return;
 		}
-
+		
 		var relatedEntitiesMap = new Map();
 		
 		//highlight related entities
@@ -52,20 +53,17 @@ var relationHighlightController = function(){
 			if(relatedEntitiesMap.has(relatedEntity)){
 				return;
 			}
-
+			
 			relatedEntitiesMap.set(relatedEntity, relatedEntity);
 		});
-
+		
 		Array.from(relatedEntitiesMap.keys()).forEach(function(entity) {
 			colorController.removeColorFromEntity(entity, "relationHighlightController");
 		});
 	}
-		
 	
 	function onRelationsChanged(applicationEvent) {
-		
 		resetColor();
-		
 		
 		//get related entities
 		var entity = applicationEvent.entities[0];	
@@ -90,22 +88,21 @@ var relationHighlightController = function(){
 				relatedEntities = relatedEntities.concat( entity.calls );
 				relatedEntities = relatedEntities.concat( entity.calledBy );			
 				break;
-			
-			default: 				
+				
+			default:
 				return;
 		}
-
-
+		
 		if(relatedEntities.length == 0){
 			return;
 		}
 		
-		if(activated){
+		if(controllerConfig.activated){
 			highlightRelatedEntities();
 		}
 		
 	}
-
+	
 	function highlightRelatedEntities(){
 		var relatedEntitiesMap = new Map();
 		
@@ -118,24 +115,21 @@ var relationHighlightController = function(){
 			if(relatedEntitiesMap.has(relatedEntity)){
 				return;
 			}
-
+			
 			relatedEntitiesMap.set(relatedEntity, relatedEntity);
 		});
-
+		
 		if(controllerConfig.unfadeOnHighlight) {
 			canvasManipulator.resetTransparencyOfEntities(Array.from(relatedEntitiesMap.keys()));
 		}
 		Array.from(relatedEntitiesMap.keys()).forEach(function(entity) { colorController.addColorToEntity(entity, controllerConfig.color, "relationHighlightController");
 		});
 	}
-
-		
-
+	
 	return {
-        initialize	: initialize,
+		initialize	: initialize,
 		reset		: reset,
 		activate	: activate,
-		deactivate	: deactivate
-    };    
-
+		toggleController : toggleController
+	};    
 }();
