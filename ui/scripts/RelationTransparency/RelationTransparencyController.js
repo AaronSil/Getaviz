@@ -72,12 +72,11 @@ var relationTransparencyController = (function() {
 			}	
 		}
 
-
 		//get new related entities
-		var entity = applicationEvent.entities[0];	
+		var entity = applicationEvent.entities[0];
 		
 		relatedEntities = new Array();
-
+		
 		switch(entity.type) {
 			case "Class":
 				relatedEntities = relatedEntities.concat(entity.superTypes);
@@ -110,9 +109,10 @@ var relationTransparencyController = (function() {
 		relatedEntities.forEach(function(relatedEntity){
 			parents = parents.concat(relatedEntity.allParents);
 		});
+		relatedEntities = relatedEntities.concat([entity]);
 
 		if(controllerConfig.activated){
-			fadeEntities(entity);
+			fadeEntities();
 		}
 		
     }	
