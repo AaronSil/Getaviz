@@ -48,58 +48,60 @@ var experimentController = (function() {
 	function activate(parent){
 		initialTime = Date.now();
 		
-		parent.id = "experimentDiv";
+		let experimentDiv = document.createElement("div");
+		experimentDiv.id = "experimentDiv";
+		document.body.appendChild(experimentDiv);
 		//taskFieldText and solvedButton
-		var experimentHeaderDiv = document.createElement("DIV");
+		var experimentHeaderDiv = document.createElement("div");
 		experimentHeaderDiv.id = "taskField";
-		parent.appendChild(experimentHeaderDiv);
+		experimentDiv.appendChild(experimentHeaderDiv);
 		
-		var taskFieldTextDiv = document.createElement("DIV");
+		var taskFieldTextDiv = document.createElement("div");
 		taskFieldTextDiv.id = "taskFieldText";
 		taskFieldTextDiv.innerHTML = "Step";
 		experimentHeaderDiv.appendChild(taskFieldTextDiv);
 		
-		var buttonDiv = document.createElement("DIV");
+		var buttonDiv = document.createElement("div");
 		buttonDiv.id = "taskButtonDiv";
 		experimentHeaderDiv.appendChild(buttonDiv);
 		
-		var taskSolvedButton = document.createElement("INPUT");
+		var taskSolvedButton = document.createElement("input");
 		taskSolvedButton.id = "taskSolvedButton";
 		taskSolvedButton.value = "Next";
-		taskSolvedButton.type = "button";		
+		taskSolvedButton.type = "button";
 		buttonDiv.appendChild(taskSolvedButton);
 		
 		if(controllerConfig.showBackButton) {
-						var backButton = document.createElement('INPUT');
-						backButton.id = 'backButton';
-						backButton.value = 'Back';
-						backButton.type = 'button';
-						experimentHeaderDiv.appendChild(backButton);
-				}
+			var backButton = document.createElement('input');
+			backButton.id = 'backButton';
+			backButton.value = 'Back';
+			backButton.type = 'button';
+			experimentHeaderDiv.appendChild(backButton);
+		}
 		
 		//taskdialog
-		var taskDialogDiv = document.createElement("DIV");
+		var taskDialogDiv = document.createElement("div");
 		taskDialogDiv.id = "taskDialog";
 		taskDialogDiv.style = "display:none";
-		parent.appendChild(taskDialogDiv);
+		experimentDiv.appendChild(taskDialogDiv);
 		
-		var taskDialogTitleDiv = document.createElement("DIV");
+		var taskDialogTitleDiv = document.createElement("div");
 		taskDialogTitleDiv.innerHTML = "Step";
 		taskDialogDiv.appendChild(taskDialogTitleDiv);
 		
-		var taskDialogTextDiv = document.createElement("DIV");
+		var taskDialogTextDiv = document.createElement("div");
 		taskDialogDiv.appendChild(taskDialogTextDiv);
 		
-		var taskDialogTextH3 = document.createElement("H3");
+		var taskDialogTextH3 = document.createElement("h3");
 		taskDialogTextH3.id = "taskText";
 		taskDialogTextH3.innerHTML = "TestText";
 		taskDialogTextDiv.appendChild(taskDialogTextH3);
 		
-		var taskDialogOkButton = document.createElement("INPUT");
+		var taskDialogOkButton = document.createElement("input");
 		taskDialogOkButton.id = "button_ok";
 		taskDialogOkButton.value = "OK";
-		taskDialogOkButton.type = "button";		
-		taskDialogTextDiv.appendChild(taskDialogOkButton);	
+		taskDialogOkButton.type = "button";
+		taskDialogTextDiv.appendChild(taskDialogOkButton);
 		
 		//taskFieldText and solvedButton
 		$('#taskSolvedButton').jqxButton({ theme: 'metro' });
@@ -112,14 +114,41 @@ var experimentController = (function() {
 		
 		//taskdialog
 		$("#taskDialog").jqxWindow({ height: 1000, width: 700, theme: 'metro', isModal: true, autoOpen: false, resizable: false, showCloseButton: false, okButton: $('#button_ok') });
-		$("#button_ok").jqxButton({ theme: "metro", width: "50px" });		
-		$("#button_ok").click(function () {		
+		$("#button_ok").jqxButton({ theme: "metro", width: "50px" });
+		$("#button_ok").click(function () {
 			if(stepTime != 0){
-				startTaskTimer(stepTime);		
+				startTaskTimer(stepTime);
 			}
 			$("#taskDialog").jqxWindow('close');
 		});
-		
+		let menu = $("ul.jqx-menu-ul")
+		if(menu.length != 0) parent = menu[0];
+		if(controllerConfig.displayAsPopover) {
+			let popoverButton = document.createElement("button");
+			popoverButton.id = "experimentPopOverButton";
+			popoverButton.style = "float: right;";
+			popoverButton.innerText = "Experiment";
+			parent.appendChild(popoverButton);
+			$("#experimentPopOverButton").jqxToggleButton({
+				theme: "metro",
+				width: 100,
+				height: 25,
+				textImageRelation: "imageBeforeText",
+				textPosition: "left",
+				imgSrc: "scripts/Experiment/assignment.png",
+				toggled: true
+			});
+			
+			$("#experimentDiv").jqxPopover({ title:"Experiment", showCloseButton: true, selector: $("#experimentPopOverButton"), arrowOffsetValue: 100, height: 500, width: 500, offset: { left: -100, top: 0 } });
+			$("#experimentDiv").on("close", function(event) {
+				$("#experimentPopOverButton").jqxToggleButton("unCheck");
+			});
+			$("#experimentDiv").jqxPopover("open");
+			taskFieldTextDiv.style = "width: 100%";
+		} else {
+			parent.parentNode.style.overflowY = "scroll";
+			parent.appendChild(experimentDiv);
+		}
 		//initialize first step
 		setNextStep();
 		setStepTexts(currentStep.text, 100, 100, 1000, 300, stepTextTime);		
