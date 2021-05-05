@@ -1,8 +1,8 @@
 var testCoverageController = (function() {
 	
 	var effects = [];
-	var entityEffectMap = new Map();
 	var selectedEntity;
+	var coverageBars = [];
 	
 	var treeMapData = [];
 	
@@ -12,10 +12,7 @@ var testCoverageController = (function() {
 		{ start: 1.0, color: "#77ff33" }
 	];
 	
-	let highlightModes = {
-		THRESHOLD: "THRESHOLD"
-	};
-	
+	// coverage types should be defined dynamically to ensure compatibility with 
 	let coverageType = {
 		STATEMENT: "statementCoverage",
 		BRANCH: "branchCoverage",
@@ -24,27 +21,29 @@ var testCoverageController = (function() {
 		METHOD: "methodCoverage"
 	};
 	
-	let visualization = {
-		COLOR_CODE: "COLOR_CODE"
+	let visualization = { // without functionality so far
+		COLOR_CODE: "COLOR_CODE",
+		TRANSPARENCY: "TRANSPARENCY",
+		SPHERES: "SPHERES"
 	};
 	
 	//config parameters	
 	var controllerConfig = {
-		highlightOn: highlightModes.THRESHOLD,
-		coverageType: coverageType.COMPLEXITY,
-		threshold: 80,
+		coverageType: coverageType.LINE,
+		lowerThreshold: 0,
+		upperThreshold: 80,
 		visualization: visualization.COLOR_CODE,
 		// if any of the following is true a dedicated ui element is being created in the view.
-		hmDropdown: false, // refers to highlightModeDropdown
 		typeDropdown: true,
 		ui: true,
 		visDropdown: false,
-		treemap: true,
+		treemap: false,
 		colorClasses: false,
-		colorNamespaces: true,
-		spheresCheckboxes: true,
+		colorNamespaces: false,
+		coloringCheckboxes: false,
+		spheresCheckboxes: false,
 		classSpheres: false,
-		packageSpheres: true
+		packageSpheres: false
 	};
 	
 	
@@ -54,137 +53,54 @@ var testCoverageController = (function() {
 	}
 	
 	function activate(parent) {
-		let eventFunction;
-		switch(controllerConfig.visualization) {
-			case "COLOR_CODE":
-				eventFunction = colorEntity;
-				break;
-		}
-		let entities;
-		switch(controllerConfig.highlightOn) {
-			case "ALWAYS":
-				// color all entities
-				colorByThreshold(100);
-				break;
-			case "HOVER":
-				// subscribe for hover events
-				actionController.actions.mouse.hover.subscribe(onEntityHover);
-				actionController.actions.mouse.unhover.subscribe(onEntityUnhover);
-				break;
-			case "SELECTED":
-				actionController.actions.mouse.key[controllerConfig.selectionMouseKey].up.subscribe(onEntityClicked);
-				break;
-			case "THRESHOLD":
-				// color below threshold
-				colorByThreshold(controllerConfig.threshold);
-				break;
-		}
-		if(controllerConfig.spheres) {
-			
-		}
+		events.selected.on.subscribe(onEntitySelected);
+		events.selected.off.subscribe(onEntityUnselected);
+		
 		createUI(parent);
 		reapplyColors();
 	}
 	
 	function createUI(parent) {
 		parent.id = "testCoverageDiv";
-		parent.style = "margin: 1rem;";
 		parent.parentNode.style = parent.parentNode.getAttribute("style") + " overflow-y: scroll;";
 		
-		// Entity name and coverage bar
+		// "Settings"
+		// Slider
+		let sectionHeading = document.createElement("h3");
+		sectionHeading.innerText = "Settings:"
+		parent.appendChild(sectionHeading);
 		let container = document.createElement("div");
 		parent.appendChild(container);
-		controllerConfig.ui = true;
-		// class name - class cov
-		let elementNameText = document.createElement("span");
-		elementNameText.id = "elementNameText";
-		elementNameText.style = "font-size: 1rem;";
-		elementNameText.innerText = "-element name-";
-		container.appendChild(elementNameText);
-		
-		let elementCoverageBar = document.createElement("div");
-		elementCoverageBar.id = "elementCoverageBar";
-		elementCoverageBar.style = "display: inline; float: right;";
-		container.appendChild(elementCoverageBar);
-		$("#elementCoverageBar").jqxProgressBar({
-			width: "50%",
-			height: "1rem",
-			showText: true});
-		events.selected.on.subscribe(onEntitySelected);
-		events.selected.off.subscribe(onEntityUnselected);
-		
-		// Threshold
-		container = document.createElement("div");
-		parent.appendChild(container);
-		let thresholdText = document.createElement("span");
-		thresholdText.style = "font-size: 0.75rem;";
-		thresholdText.innerText = "Display code coverages below: "
-		container.appendChild(thresholdText);
-		let thresholdInput = document.createElement("input");
-		thresholdInput.id = "thresholdInput";
-		thresholdInput.type = "Number";
-		thresholdInput.setAttribute("value", "contstraints: {minimum: '0.0', maximum: '1.0'}");
-		thresholdInput.style = "display: inline; float: right; text-align: center; margin: 0 0.5rem; padding: 0.1rem 0.25rem;";
-		container.appendChild(thresholdInput);
-		
-		$("#thresholdInput").jqxInput({
-			width: "3rem",
-			height: "1rem",
-			value: controllerConfig.threshold
-		});
-		
-		$("#thresholdInput").on("change", function(event) {
-			if(event.args) {
-				if(typeof(Number(event.args?.value)) != "NaN" && event.args?.value != controllerConfig.threshold) {
-					setThreshold(event.args.value);
-				}
+		let sliderLabel = document.createElement("span");
+		sliderLabel.innerText = "Highlighted code coverage range:";;
+		container.appendChild(sliderLabel);
+		container.appendChild(document.createElement("br"))
+		let valLabel = document.createElement("span");
+		valLabel.id = "sliderMinLabel";
+		valLabel.innerText = controllerConfig.lowerThreshold;
+		container.appendChild(valLabel);
+		valLabel = document.createElement("span");
+		valLabel.id = "sliderMaxLabel";
+		valLabel.innerText = controllerConfig.upperThreshold;
+		valLabel.style = "float: right;"
+		container.appendChild(valLabel);
+		let rangeSlider = document.createElement("div");
+		rangeSlider.style = "margin: auto;";
+		rangeSlider.id = "rangeSlider";
+		container.appendChild(rangeSlider);
+		$("#rangeSlider").jqxSlider({ tooltip: true, showButtons: true, height: "48px", min: 0, max: 100, step: 1, ticksFrequency: 10, mode: "fixed", values: [controllerConfig.lowerThreshold, controllerConfig.upperThreshold], rangeSlider: true, width: "100%", theme: "metro"});
+		$("#rangeSlider").on("change", function(event) {
+			let lower = event.args.value.rangeStart;
+			let upper = event.args.value.rangeEnd;
+			if(lower != controllerConfig.lowerThreshold || upper != controllerConfig.upperThreshold) {
+				setThreshold(lower, upper);
 			}
 		});
-		
-		// input menu 1-3 + input text for threshold
-		if(controllerConfig.hmDropdown) {
-			container = document.createElement("div");
-			parent.appendChild(container);
-			hmDescription = document.createElement("span");
-			hmDescription.style = "font-size: 0.75rem;";
-			hmDescription.innerText = "Highlight mode:";
-			container.appendChild(hmDescription);
-			let hmDropdownDiv = document.createElement("div");
-			hmDropdownDiv.id = "hmDropdown";
-			hmDropdownDiv.style = "display: inline; float: right;";
-			container.appendChild(hmDropdownDiv);
-			
-			let items = [];
-			let selected = 0;
-			Object.values(highlightModes).forEach(function(el, index) {
-				items.push(el.toLowerCase());
-				if(controllerConfig.highlightOn.toLowerCase() == items[index]) {
-					selected = index;
-				}
-			});
-			$div = $("#hmDropdown").jqxDropDownList({
-				width: "50%",
-				height: "1rem",
-				source: items,
-				selectedIndex: selected
-			});
-			
-			$("#hmDropdown").on("select", function(event) {
-				let item = $("#hmDropdown").jqxDropDownList("getSelectedItem");
-				controllerConfig.highlightOn = highlightModes[item.value.toUpperCase()];
-				if(controllerConfig.highlightOn == highlightModes.THRESHOLD) {
-					$("#thresholdInput").jqxInput("disabled", false);
-				} else {
-					$("#thresholdInput").jqxInput({disabled: true});
-				}
-				reapplyColors();
-			});
-		}
+		// Type Dropdown List
 		if(controllerConfig.typeDropdown) {
 			container = document.createElement("div");
 			parent.appendChild(container);
 			typeDescription = document.createElement("span");
-			typeDescription.style = "font-size: 0.75rem;";
 			typeDescription.innerText = "Coverage type:";
 			container.appendChild(typeDescription);
 			let typeDropdownDiv = document.createElement("div");
@@ -213,37 +129,92 @@ var testCoverageController = (function() {
 			});
 		}
 		
-		// Class and Namespace checkbox
+		// Entity name and coverage bar
+		sectionHeading = document.createElement("h3");
+		sectionHeading.innerText = "Selected Entity:";
+		parent.appendChild(sectionHeading);
 		container = document.createElement("div");
-		parent.appendChild(container)
-		let checkboxText = document.createElement("span");
-		checkboxText.style = "font-size: 0.75rem;";
-		checkboxText.innerText = "Apply colors to: ";
-		container.appendChild(checkboxText);
-		let classesCheckbox = document.createElement("div");
-		classesCheckbox.id = "classesCheckbox";
-		classesCheckbox.style = "display: inline-block; float: right;";
-		classesCheckbox.innerText = "Classes";
-		container.appendChild(classesCheckbox);
-		$("#classesCheckbox").jqxCheckBox({ checked: controllerConfig.colorClasses });
-		$("#classesCheckbox").bind('change', function (event) {
-			toggleColorClasses();
+		parent.appendChild(container);
+		controllerConfig.ui = true;
+		let entityTypeLabel = document.createElement("span");
+		entityTypeLabel.id = "entityTypeLabel";
+		entityTypeLabel.innerText = "Type:";
+		container.appendChild(entityTypeLabel);
+		container.appendChild(document.createElement("br"));
+		let entityNameLabel = document.createElement("span");
+		entityNameLabel.id = "entityNameLabel";
+		entityNameLabel.style = "float: right;";
+		container.appendChild(entityNameLabel);
+		container.appendChild(document.createElement("br"));
+		let tmpLabel = document.createElement("span");
+		tmpLabel.innerText = "Belongs to:";
+		container.appendChild(tmpLabel);
+		container.appendChild(document.createElement("br"));
+		let belongsToLabel = document.createElement("span");
+		belongsToLabel.id = "belongsToLabel";
+		belongsToLabel.style = "float: right";
+		container.appendChild(belongsToLabel);
+		
+		container = document.createElement("div");
+		container.id = "entityCoverageDiv";
+		parent.appendChild(container);
+		
+		let coverageOf = document.createElement("span");
+		coverageOf.id = "coverageOfLabel";
+		coverageOf.innerText = "Package/Class Coverage:";
+		container.appendChild(coverageOf);
+		container.appendChild(document.createElement("br"));
+		Object.values(coverageType).forEach(function(type) {
+			let innerContainer = document.createElement("div");
+			container.appendChild(innerContainer);
+			let coverageTypeLabel = document.createElement("span");
+			coverageTypeLabel.innerText = type+":";
+			container.appendChild(coverageTypeLabel);
+			let elementCoverageBar = document.createElement("div");
+			elementCoverageBar.id = type+"Bar";
+			elementCoverageBar.style = "display: inline; float: right;";
+			innerContainer.appendChild(elementCoverageBar);
+			let progressBar = $("#"+type+"Bar").jqxProgressBar({
+				width: "50%",
+				height: "0.75rem",
+				showText: true
+			});
+			coverageBars.push(progressBar);
+			container.appendChild(document.createElement("br"));
 		});
-		let packagesCheckbox = document.createElement("div");
-		packagesCheckbox.id = "packagesCheckbox";
-		packagesCheckbox.style = "display: inline-block; float: right;";
-		packagesCheckbox.innerText = "Packages";
-		container.appendChild(packagesCheckbox);
-		$("#packagesCheckbox").jqxCheckBox({ checked: controllerConfig.colorNamespaces });
-		$("#packagesCheckbox").bind('change', function (event) {
-			toggleColorNamespaces();
-		});
+		parent.appendChild(container);
+		
+		// Class and Namespace checkbox
+		if(controllerConfig.coloringCheckboxes) {
+			container = document.createElement("div");
+			parent.appendChild(container)
+			let checkboxText = document.createElement("span");
+			checkboxText.innerText = "Apply colors to: ";
+			container.appendChild(checkboxText);
+			let classesCheckbox = document.createElement("div");
+			classesCheckbox.id = "classesCheckbox";
+			classesCheckbox.style = "display: inline-block; float: right;";
+			classesCheckbox.innerText = "Classes";
+			container.appendChild(classesCheckbox);
+			$("#classesCheckbox").jqxCheckBox({ checked: controllerConfig.colorClasses });
+			$("#classesCheckbox").bind('change', function (event) {
+				toggleColorClasses();
+			});
+			let packagesCheckbox = document.createElement("div");
+			packagesCheckbox.id = "packagesCheckbox";
+			packagesCheckbox.style = "display: inline-block; float: right;";
+			packagesCheckbox.innerText = "Packages";
+			container.appendChild(packagesCheckbox);
+			$("#packagesCheckbox").jqxCheckBox({ checked: controllerConfig.colorNamespaces });
+			$("#packagesCheckbox").bind('change', function (event) {
+				toggleColorNamespaces();
+			});
+		}
 		
 		if(controllerConfig.spheresCheckboxes) {
 			container = document.createElement("div");
 			parent.appendChild(container)
 			let checkboxText = document.createElement("span");
-			checkboxText.style = "font-size: 0.75rem;";
 			checkboxText.innerText = "Show spheres around: ";
 			container.appendChild(checkboxText);
 			
@@ -268,8 +239,6 @@ var testCoverageController = (function() {
 			});
 		}
 		
-		if(controllerConfig.visDropdown) {
-		}
 		if(controllerConfig.treemap) {
 			let treeMapDiv = document.createElement("div");
 			treeMapDiv.id = "treeMap";
@@ -293,7 +262,7 @@ var testCoverageController = (function() {
 							events.selected.on.publish(applicationEvent);
 						});
 						element.jqxTooltip({
-							content: "<div><div style='font-weight: bold; max-width: 200px; font-family: verdana; font-size: 13px;'>" + value.data.fqn + "</div><div style='width: 200px; font-family: verdana; font-size: 12px;'>Coverage: " + Math.round(value.data.statementCoverage * 100)+"%" + "</div></div>",
+							content: "<div><div style='font-weight: bold; max-width: 200px; font-family: verdana; font-size: 12px;'>" + value.data.fqn + "</div><div style='width: 200px; font-family: verdana; font-size: 12px;'>Coverage: " + Math.round(value.data.statementCoverage * 100)+"%" + "</div></div>",
 							position: "mouse",
 							autoHideDelay: 6000
 						});
@@ -338,8 +307,9 @@ var testCoverageController = (function() {
 	}
 	
 	function onEntitySelected(applicationEvent) {
-		var entity = applicationEvent.entities[0];
-		updateCoverageBar(entity);
+		selectedEntity = applicationEvent.entities[0];
+		updateLabels();
+		updateCoverageBars();
 	}
 	
 	function onEntityUnselected(applicationEvent) {
@@ -354,24 +324,11 @@ var testCoverageController = (function() {
 		model.getEntitiesByType("Namespace").forEach(function(entity) {
 			colorController.removeColorFromEntity(entity, "testCoverageController");
 		});
-		switch(controllerConfig.highlightOn) {
-			case "ALWAYS":
-				controllerConfig.highlightOn = highlightModes.ALWAYS;
-				colorByThreshold(100);
-				drawSpheres();
-				break;
-			case "HOVER":
-				controllerConfig.highlightOn = highlightModes.HOVER;
-				break;
-			case "SELECTED":
-				controllerConfig.highlightOn = highlightModes.SELECTED;
-				break;
-			case "THRESHOLD":
-				controllerConfig.highlightOn = highlightModes.THRESHOLD;
-				colorByThreshold(controllerConfig.threshold);
-				drawSpheres();
-				break;
-		}
+		model.getEntitiesByType("Class").forEach(function(entity) {
+			colorController.removeColorFromEntity(entity, "testCoverageController");
+		});
+		colorByThreshold();
+		drawSpheres();
 	}
 		
 	function calculateColor(coverage) {
@@ -416,12 +373,14 @@ var testCoverageController = (function() {
 		}
 	}
 	
-	function colorByThreshold(threshold) {
-		threshold /= 100;
+	function colorByThreshold() {
+		let lower = controllerConfig.lowerThreshold/100.0;
+		let upper = controllerConfig.upperThreshold/100.0;
 		if(controllerConfig.colorNamespaces) {
 			model.getEntitiesByType("Namespace").forEach(function(el) {
 				if(el.testCoverage[controllerConfig.coverageType] !== undefined) {
-					if(el.testCoverage[controllerConfig.coverageType] <= threshold) {
+					let coverage = el.testCoverage[controllerConfig.coverageType]
+					if(lower <= coverage && coverage <= upper) {
 						colorEntity(el);
 					} else {
 						colorController.removeColorFromEntity(el, "testCoverageController");
@@ -436,7 +395,8 @@ var testCoverageController = (function() {
 		if(controllerConfig.colorClasses) {
 			model.getEntitiesByType("Class").forEach(function(el) {
 				if(el.testCoverage[controllerConfig.coverageType] !== undefined) {
-					if(el.testCoverage[controllerConfig.coverageType] <= threshold) {
+					let coverage = el.testCoverage[controllerConfig.coverageType]
+					if(lower <= coverage && coverage <= upper) {
 						colorEntity(el);
 						if(controllerConfig.spheres) {
 							addGlyph([el]);
@@ -453,19 +413,24 @@ var testCoverageController = (function() {
 		}
 	}
 	
-	function drawSpheres(threshold = controllerConfig.threshold) {
-		threshold /= 100;
+	function drawSpheres() {
+		let lower = controllerConfig.lowerThreshold/100.0;
+		let upper = controllerConfig.upperThreshold/100.0;
 		if(controllerConfig.packageSpheres) {
 			model.getEntitiesByType("Namespace").forEach(function(el) {
-				if(el.testCoverage[controllerConfig.coverageType] <= threshold) {
-					addGlyph([el], 1);
+				if(el.testCoverage[controllerConfig.coverageType] !== undefined) {
+					let coverage = el.testCoverage[controllerConfig.coverageType];
+					if(lower <= coverage && coverage <= upper) {
+						addGlyph([el], 1);
+					}
 				}
 			});
 		}
 		if(controllerConfig.classSpheres) {
 			model.getEntitiesByType("Class").forEach(function(el) {
-				if(el.testCoverage[controllerConfig.coverageType] <= threshold) {
-					if(controllerConfig.spheresCheckboxes) {
+				if(el.testCoverage[controllerConfig.coverageType] !== undefined) {
+					let coverage = el.testCoverage[controllerConfig.coverageType];
+					if(lower <= coverage && coverage <= upper) {
 						addGlyph([el]);
 					}
 				}
@@ -552,22 +517,39 @@ var testCoverageController = (function() {
 		});
 	}
 	
-	function updateCoverageBar(entity) {
-		if($("#elementCoverageBar").length != 0) {
-			if(entity == undefined) entity = model.getEntityById(Array.from(events.selected.getEntities())[0][0]);
-			if(entity == undefined) return;
-			if(entity.type !== "Class" && entity.type !== "Namespace") {
-				entity = model.getEntityById(entity.belongsTo.id);
-			}
-			if(typeof(entity.testCoverage[controllerConfig.coverageType]) !== "undefined" && controllerConfig.ui) {
-				selectedEntity = entity;
-				document.getElementById("elementNameText").innerText = entity.qualifiedName;
-				let color = calculateColor(entity.testCoverage[controllerConfig.coverageType]);
+	function updateLabels() {
+		let type = selectedEntity.type;
+		document.getElementById("entityTypeLabel").innerText = type + ":";
+		let name = selectedEntity.name;
+		if(type == "Method") {
+			var re = /\w+\./g;
+			name = selectedEntity.signature.replace(re, "");
+		}
+		document.getElementById("entityNameLabel").innerText = name;
+		document.getElementById("belongsToLabel").innerText = selectedEntity.belongsTo.qualifiedName;
+		if(selectedEntity.type == "Namespace") {
+			document.getElementById("coverageOfLabel").innerText = "Package coverage:"; 
+		} else {
+			document.getElementById("coverageOfLabel").innerText = "Class coverage:"; 
+		}
+	}
+	
+	function updateCoverageBars() {
+		let entityWithCoverage = selectedEntity;
+		if(selectedEntity.type != "Class" && selectedEntity.type != "Namespace") {
+			entityWithCoverage = selectedEntity.belongsTo;
+		}
+		Object.values(coverageBars).forEach(function(bar) {
+			let type = bar[0].id.replace("Bar", "");
+			if(entityWithCoverage.testCoverage[type] !== undefined) {
+				let color = calculateColor(entityWithCoverage.testCoverage[type]);
 				let hexString = rgbToHex(color);
 				let colorRanges = [ { stop: 100, color: hexString } ];
-				$("#elementCoverageBar").jqxProgressBar({value: parseInt(100 * entity.testCoverage[controllerConfig.coverageType]), colorRanges: colorRanges});
+				$("#"+type+"Bar").jqxProgressBar({value: parseInt(100 * entityWithCoverage.testCoverage[type]), colorRanges: colorRanges, disabled: false});
+			} else {
+				$("#"+type+"Bar").jqxProgressBar({disabled: true});
 			}
-		}
+		});
 	}
 	
 	function setCoverageType(typeOrIndex) {
@@ -583,14 +565,21 @@ var testCoverageController = (function() {
 			$("#typeDropdown").jqxDropDownList("selectIndex", selected);
 		}
 		reapplyColors();
-		updateCoverageBar();
+		updateCoverageBars();
 		return "Code coverage type set to " + typeOrIndex;
 	}
 	
-	function setThreshold(threshold) {
+	function setThreshold(lower, upper) {
+		if(lower < 0 || 100 < upper || upper < lower) {
+			events.log.error.publish({ text: "Unaccepted threshold inputs." });
+			return;
+		}
 		let inputField = $("#thresholdInput");
-		controllerConfig.threshold = threshold;
-		if(inputField.length != 0) inputField.val(controllerConfig.threshold);
+		controllerConfig.lowerThreshold = lower;
+		controllerConfig.upperThreshold = upper;
+		$("#rangeSlider").jqxSlider({ values: [lower, upper] });
+		document.getElementById("sliderMinLabel").innerText = lower;
+		document.getElementById("sliderMaxLabel").innerText = upper;
 		reapplyColors();
 	}
 	

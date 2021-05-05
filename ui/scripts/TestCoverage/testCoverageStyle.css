@@ -1,6 +1,25 @@
- #testCoverageDiv > div {
+#testCoverageDiv > div {
 	padding: 0.5rem;
- }
+	margin: 0.25rem 0;
+}
+
+#testCoverageDiv > h3 {
+	margin: 0.25rem;
+}
+ 
+#testCoverageDiv span {
+	font-size: 0.75rem;
+}
+
+/*div:not necessary because element is generated dynamically without id.*/
+#rangeSlider > div:not(.jqx-slider-left) {
+	position: initial !important;
+	margin: auto;	
+}
+
+#entityCoverageDiv > div {
+	margin: 0.25rem 0;
+}
  
 #treeMap:hover {
 	cursor: pointer;
