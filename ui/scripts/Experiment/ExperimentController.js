@@ -17,7 +17,8 @@ var experimentController = (function() {
 		serverURL : "http://" + window.location.host + "/scripts/InteractionLogger/index.php",
 		showBackButton: false,
 		showSureButton: true,
-		showPopup: true
+		showPopup: false,
+		displayAsPopover: true
 	};
 	
 	
