@@ -56,34 +56,9 @@ var testCoverageController = (function() {
 	}
 	
 	function activate(parent) {
-		let eventFunction;
-		switch(controllerConfig.visualization) {
-			case "COLOR_CODE":
-				eventFunction = colorEntity;
-				break;
-		}
-		let entities;
-		switch(controllerConfig.highlightOn) {
-			case "ALWAYS":
-				// color all entities
-				colorByThreshold(100);
-				break;
-			case "HOVER":
-				// subscribe for hover events
-				actionController.actions.mouse.hover.subscribe(onEntityHover);
-				actionController.actions.mouse.unhover.subscribe(onEntityUnhover);
-				break;
-			case "SELECTED":
-				actionController.actions.mouse.key[controllerConfig.selectionMouseKey].up.subscribe(onEntityClicked);
-				break;
-			case "THRESHOLD":
-				// color below threshold
-				colorByThreshold(controllerConfig.threshold);
-				break;
-		}
-		if(controllerConfig.spheres) {
-			
-		}
+		events.selected.on.subscribe(onEntitySelected);
+		events.selected.off.subscribe(onEntityUnselected);
+		
 		createUI(parent);
 		reapplyColors();
 	}
