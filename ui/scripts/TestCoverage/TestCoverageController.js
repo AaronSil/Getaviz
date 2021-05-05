@@ -32,9 +32,7 @@ var testCoverageController = (function() {
 	
 	//config parameters	
 	var controllerConfig = {
-		highlightOn: highlightModes.THRESHOLD,
-		coverageType: coverageType.COMPLEXITY,
-		threshold: 80,
+		coverageType: coverageType.LINE,
 		lowerThreshold: 0,
 		upperThreshold: 80,
 		visualization: visualization.COLOR_CODE,
@@ -95,53 +93,36 @@ var testCoverageController = (function() {
 		parent.style = "margin: 1rem;";
 		parent.parentNode.style = parent.parentNode.getAttribute("style") + " overflow-y: scroll;";
 		
-		// Entity name and coverage bar
+		// "Settings"
+		// Slider
+		let sectionHeading = document.createElement("h3");
+		sectionHeading.innerText = "Settings:"
+		parent.appendChild(sectionHeading);
 		let container = document.createElement("div");
 		parent.appendChild(container);
-		controllerConfig.ui = true;
-		// class name - class cov
-		let elementNameText = document.createElement("span");
-		elementNameText.id = "elementNameText";
-		elementNameText.style = "font-size: 1rem;";
-		elementNameText.innerText = "-element name-";
-		container.appendChild(elementNameText);
-		
-		let elementCoverageBar = document.createElement("div");
-		elementCoverageBar.id = "elementCoverageBar";
-		elementCoverageBar.style = "display: inline; float: right;";
-		container.appendChild(elementCoverageBar);
-		$("#elementCoverageBar").jqxProgressBar({
-			width: "50%",
-			height: "1rem",
-			showText: true});
-		events.selected.on.subscribe(onEntitySelected);
-		events.selected.off.subscribe(onEntityUnselected);
-		
-		// Threshold
-		container = document.createElement("div");
-		parent.appendChild(container);
-		let thresholdText = document.createElement("span");
-		thresholdText.style = "font-size: 0.75rem;";
-		thresholdText.innerText = "Display code coverages below: "
-		container.appendChild(thresholdText);
-		let thresholdInput = document.createElement("input");
-		thresholdInput.id = "thresholdInput";
-		thresholdInput.type = "Number";
-		thresholdInput.setAttribute("value", "contstraints: {minimum: '0.0', maximum: '1.0'}");
-		thresholdInput.style = "display: inline; float: right; text-align: center; margin: 0 0.5rem; padding: 0.1rem 0.25rem;";
-		container.appendChild(thresholdInput);
-		
-		$("#thresholdInput").jqxInput({
-			width: "3rem",
-			height: "1rem",
-			value: controllerConfig.threshold
-		});
-		
-		$("#thresholdInput").on("change", function(event) {
-			if(event.args) {
-				if(typeof(Number(event.args?.value)) != "NaN" && event.args?.value != controllerConfig.threshold) {
-					setThreshold(event.args.value);
-				}
+		let sliderLabel = document.createElement("span");
+		sliderLabel.innerText = "Highlighted code coverage range:";;
+		container.appendChild(sliderLabel);
+		container.appendChild(document.createElement("br"))
+		let valLabel = document.createElement("span");
+		valLabel.id = "sliderMinLabel";
+		valLabel.innerText = controllerConfig.lowerThreshold;
+		container.appendChild(valLabel);
+		valLabel = document.createElement("span");
+		valLabel.id = "sliderMaxLabel";
+		valLabel.innerText = controllerConfig.upperThreshold;
+		valLabel.style = "float: right;"
+		container.appendChild(valLabel);
+		let rangeSlider = document.createElement("div");
+		rangeSlider.style = "margin: auto;";
+		rangeSlider.id = "rangeSlider";
+		container.appendChild(rangeSlider);
+		$("#rangeSlider").jqxSlider({ tooltip: true, showButtons: true, height: "48px", min: 0, max: 100, step: 1, ticksFrequency: 10, mode: "fixed", values: [controllerConfig.lowerThreshold, controllerConfig.upperThreshold], rangeSlider: true, width: "100%", theme: "metro"});
+		$("#rangeSlider").on("change", function(event) {
+			let lower = event.args.value.rangeStart;
+			let upper = event.args.value.rangeEnd;
+			if(lower != controllerConfig.lowerThreshold || upper != controllerConfig.upperThreshold) {
+				setThreshold(lower, upper);
 			}
 		});
 		
@@ -420,12 +401,14 @@ var testCoverageController = (function() {
 		}
 	}
 	
-	function colorByThreshold(threshold) {
-		threshold /= 100;
+	function colorByThreshold() {
+		let lower = controllerConfig.lowerThreshold/100.0;
+		let upper = controllerConfig.upperThreshold/100.0;
 		if(controllerConfig.colorNamespaces) {
 			model.getEntitiesByType("Namespace").forEach(function(el) {
 				if(el.testCoverage[controllerConfig.coverageType] !== undefined) {
-					if(el.testCoverage[controllerConfig.coverageType] <= threshold) {
+					let coverage = el.testCoverage[controllerConfig.coverageType]
+					if(lower <= coverage && coverage <= upper) {
 						colorEntity(el);
 					} else {
 						colorController.removeColorFromEntity(el, "testCoverageController");
@@ -440,7 +423,8 @@ var testCoverageController = (function() {
 		if(controllerConfig.colorClasses) {
 			model.getEntitiesByType("Class").forEach(function(el) {
 				if(el.testCoverage[controllerConfig.coverageType] !== undefined) {
-					if(el.testCoverage[controllerConfig.coverageType] <= threshold) {
+					let coverage = el.testCoverage[controllerConfig.coverageType]
+					if(lower <= coverage && coverage <= upper) {
 						colorEntity(el);
 						if(controllerConfig.spheres) {
 							addGlyph([el]);
@@ -457,19 +441,24 @@ var testCoverageController = (function() {
 		}
 	}
 	
-	function drawSpheres(threshold = controllerConfig.threshold) {
-		threshold /= 100;
+	function drawSpheres() {
+		let lower = controllerConfig.lowerThreshold/100.0;
+		let upper = controllerConfig.upperThreshold/100.0;
 		if(controllerConfig.packageSpheres) {
 			model.getEntitiesByType("Namespace").forEach(function(el) {
-				if(el.testCoverage[controllerConfig.coverageType] <= threshold) {
-					addGlyph([el], 1);
+				if(el.testCoverage[controllerConfig.coverageType] !== undefined) {
+					let coverage = el.testCoverage[controllerConfig.coverageType];
+					if(lower <= coverage && coverage <= upper) {
+						addGlyph([el], 1);
+					}
 				}
 			});
 		}
 		if(controllerConfig.classSpheres) {
 			model.getEntitiesByType("Class").forEach(function(el) {
-				if(el.testCoverage[controllerConfig.coverageType] <= threshold) {
-					if(controllerConfig.spheresCheckboxes) {
+				if(el.testCoverage[controllerConfig.coverageType] !== undefined) {
+					let coverage = el.testCoverage[controllerConfig.coverageType];
+					if(lower <= coverage && coverage <= upper) {
 						addGlyph([el]);
 					}
 				}
@@ -591,10 +580,17 @@ var testCoverageController = (function() {
 		return "Code coverage type set to " + typeOrIndex;
 	}
 	
-	function setThreshold(threshold) {
+	function setThreshold(lower, upper) {
+		if(lower < 0 || 100 < upper || upper < lower) {
+			events.log.error.publish({ text: "Unaccepted threshold inputs." });
+			return;
+		}
 		let inputField = $("#thresholdInput");
-		controllerConfig.threshold = threshold;
-		if(inputField.length != 0) inputField.val(controllerConfig.threshold);
+		controllerConfig.lowerThreshold = lower;
+		controllerConfig.upperThreshold = upper;
+		$("#rangeSlider").jqxSlider({ values: [lower, upper] });
+		document.getElementById("sliderMinLabel").innerText = lower;
+		document.getElementById("sliderMaxLabel").innerText = upper;
 		reapplyColors();
 	}
 	
