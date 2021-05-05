@@ -7,3 +7,7 @@
 	float: right;
 	margin: 0 0 0 4px;
 }
+
+.jqx-menu-ul>.jqx-button:hover {
+	cursor: pointer;
+}
