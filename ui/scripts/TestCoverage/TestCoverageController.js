@@ -336,8 +336,9 @@ var testCoverageController = (function() {
 	}
 	
 	function onEntitySelected(applicationEvent) {
-		var entity = applicationEvent.entities[0];
-		updateCoverageBar(entity);
+		selectedEntity = applicationEvent.entities[0];
+		updateLabels();
+		updateCoverageBars();
 	}
 	
 	function onEntityUnselected(applicationEvent) {
@@ -352,24 +353,11 @@ var testCoverageController = (function() {
 		model.getEntitiesByType("Namespace").forEach(function(entity) {
 			colorController.removeColorFromEntity(entity, "testCoverageController");
 		});
-		switch(controllerConfig.highlightOn) {
-			case "ALWAYS":
-				controllerConfig.highlightOn = highlightModes.ALWAYS;
-				colorByThreshold(100);
-				drawSpheres();
-				break;
-			case "HOVER":
-				controllerConfig.highlightOn = highlightModes.HOVER;
-				break;
-			case "SELECTED":
-				controllerConfig.highlightOn = highlightModes.SELECTED;
-				break;
-			case "THRESHOLD":
-				controllerConfig.highlightOn = highlightModes.THRESHOLD;
-				colorByThreshold(controllerConfig.threshold);
-				drawSpheres();
-				break;
-		}
+		model.getEntitiesByType("Class").forEach(function(entity) {
+			colorController.removeColorFromEntity(entity, "testCoverageController");
+		});
+		colorByThreshold();
+		drawSpheres();
 	}
 		
 	function calculateColor(coverage) {
@@ -558,22 +546,39 @@ var testCoverageController = (function() {
 		});
 	}
 	
-	function updateCoverageBar(entity) {
-		if($("#elementCoverageBar").length != 0) {
-			if(entity == undefined) entity = model.getEntityById(Array.from(events.selected.getEntities())[0][0]);
-			if(entity == undefined) return;
-			if(entity.type !== "Class" && entity.type !== "Namespace") {
-				entity = model.getEntityById(entity.belongsTo.id);
-			}
-			if(typeof(entity.testCoverage[controllerConfig.coverageType]) !== "undefined" && controllerConfig.ui) {
-				selectedEntity = entity;
-				document.getElementById("elementNameText").innerText = entity.qualifiedName;
-				let color = calculateColor(entity.testCoverage[controllerConfig.coverageType]);
+	function updateLabels() {
+		let type = selectedEntity.type;
+		document.getElementById("entityTypeLabel").innerText = type + ":";
+		let name = selectedEntity.name;
+		if(type == "Method") {
+			var re = /\w+\./g;
+			name = selectedEntity.signature.replace(re, "");
+		}
+		document.getElementById("entityNameLabel").innerText = name;
+		document.getElementById("belongsToLabel").innerText = selectedEntity.belongsTo.qualifiedName;
+		if(selectedEntity.type == "Namespace") {
+			document.getElementById("coverageOfLabel").innerText = "Package coverage:"; 
+		} else {
+			document.getElementById("coverageOfLabel").innerText = "Class coverage:"; 
+		}
+	}
+	
+	function updateCoverageBars() {
+		let entityWithCoverage = selectedEntity;
+		if(selectedEntity.type != "Class" && selectedEntity.type != "Namespace") {
+			entityWithCoverage = selectedEntity.belongsTo;
+		}
+		Object.values(coverageBars).forEach(function(bar) {
+			let type = bar[0].id.replace("Bar", "");
+			if(entityWithCoverage.testCoverage[type] !== undefined) {
+				let color = calculateColor(entityWithCoverage.testCoverage[type]);
 				let hexString = rgbToHex(color);
 				let colorRanges = [ { stop: 100, color: hexString } ];
-				$("#elementCoverageBar").jqxProgressBar({value: parseInt(100 * entity.testCoverage[controllerConfig.coverageType]), colorRanges: colorRanges});
+				$("#"+type+"Bar").jqxProgressBar({value: parseInt(100 * entityWithCoverage.testCoverage[type]), colorRanges: colorRanges, disabled: false});
+			} else {
+				$("#"+type+"Bar").jqxProgressBar({disabled: true});
 			}
-		}
+		});
 	}
 	
 	function setCoverageType(typeOrIndex) {
@@ -589,7 +594,7 @@ var testCoverageController = (function() {
 			$("#typeDropdown").jqxDropDownList("selectIndex", selected);
 		}
 		reapplyColors();
-		updateCoverageBar();
+		updateCoverageBars();
 		return "Code coverage type set to " + typeOrIndex;
 	}
 	
