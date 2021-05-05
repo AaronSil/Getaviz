@@ -12,10 +12,7 @@ var testCoverageController = (function() {
 		{ start: 1.0, color: "#77ff33" }
 	];
 	
-	let highlightModes = {
-		THRESHOLD: "THRESHOLD"
-	};
-	
+	// coverage types should be defined dynamically to ensure compatibility with 
 	let coverageType = {
 		STATEMENT: "statementCoverage",
 		BRANCH: "branchCoverage",
@@ -37,16 +34,16 @@ var testCoverageController = (function() {
 		upperThreshold: 80,
 		visualization: visualization.COLOR_CODE,
 		// if any of the following is true a dedicated ui element is being created in the view.
-		hmDropdown: false, // refers to highlightModeDropdown
 		typeDropdown: true,
 		ui: true,
 		visDropdown: false,
-		treemap: true,
+		treemap: false,
 		colorClasses: false,
-		colorNamespaces: true,
-		spheresCheckboxes: true,
+		colorNamespaces: false,
+		coloringCheckboxes: false,
+		spheresCheckboxes: false,
 		classSpheres: false,
-		packageSpheres: true
+		packageSpheres: false
 	};
 	
 	
@@ -185,7 +182,6 @@ var testCoverageController = (function() {
 			coverageBars.push(progressBar);
 			container.appendChild(document.createElement("br"));
 		});
-		console.debug(coverageBars);
 		parent.appendChild(container);
 		
 		// Class and Namespace checkbox
