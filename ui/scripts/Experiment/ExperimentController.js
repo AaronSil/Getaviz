@@ -1,13 +1,11 @@
-var experimentController = (function() {	
+var experimentController = (function() {
 	
 	var initialTime;
-	
-	var experimentControllerDiv;
 	
 	var stepOrder;
 	var stepOrderIterator = 0;
 	
-	var steps;	
+	var steps;
 	var currentStep;
 	
 	var stepTime = 0;
@@ -151,7 +149,7 @@ var experimentController = (function() {
 		}
 		//initialize first step
 		setNextStep();
-		setStepTexts(currentStep.text, 100, 100, 1000, 300, stepTextTime);		
+		setStepTexts(currentStep.text, 100, 100, 1000, 300, stepTextTime);
 		
 		setTimeout(taskTimer, 1000);
 	}
@@ -181,9 +179,9 @@ var experimentController = (function() {
 		
 		setNextStep();
 		
-		setStepTexts(currentStep.text, 100, 100, 1000, 300, stepTextTime);		
+		setStepTexts(currentStep.text, 100, 100, 1000, 300, stepTextTime);
 	}
-		
+	
 	function previousStep() {
 		stopTaskTimer();
 		
@@ -230,7 +228,7 @@ var experimentController = (function() {
 		if(controllerConfig.showPopup) {
 						showPopup(fullText, posx, posy, width, height, time);
 				}
-		setText(fullText);				
+		setText(fullText);
 	}
 	
 	function showPopup(text, posx, posy, width, height, time){
@@ -238,22 +236,22 @@ var experimentController = (function() {
 		$("#taskText").html(text);
 		
 		if(time != 0){
-			$("#button_ok").jqxButton({ disabled: true });		
-			setTimeout(timeoutButton, 1000);			
+			$("#button_ok").jqxButton({ disabled: true });
+			setTimeout(timeoutButton, 1000);
 			timeout = time;
 		}
 		
-		$("#taskDialog").jqxWindow({ position: { x: posx, y: posy }}); 
+		$("#taskDialog").jqxWindow({ position: { x: posx, y: posy }});
 		$("#taskDialog").jqxWindow({ height: height, width: width, maxWidth: width});
-		$("#taskDialog").jqxWindow('open');				
+		$("#taskDialog").jqxWindow('open');
 	}
 	
 	var timeout = 1;
 	
 	function timeoutButton(){
 		if(timeout == 0){
-			$("#button_ok").jqxButton({disabled: false}); 
-			$("#button_ok")[0].value = "OK";				
+			$("#button_ok").jqxButton({disabled: false});
+			$("#button_ok")[0].value = "OK";
 		} else {
 			timeout = timeout - 1;
 			$("#button_ok")[0].value = timeout;
@@ -265,7 +263,7 @@ var experimentController = (function() {
 	function setText(text){
 		//set task field
 		$("#taskFieldText").html(text);	
-		$("#taskFieldText").css("text-transform", "none");		
+		$("#taskFieldText").css("text-transform", "none");
 	}
 	
 	
@@ -286,10 +284,10 @@ var experimentController = (function() {
 	var timeOutTime = 0;
 	
 	function taskTimer(){
-				
+		
 		setTimeout(taskTimer, 1000);
 		
-		if(!taskTimerOn){			
+		if(!taskTimerOn){
 			return;
 		}
 		var timeNow = Date.now();
@@ -300,12 +298,12 @@ var experimentController = (function() {
 	
 	
 	function startTaskTimer(timeoutInMin){
-		timeOutTime = Date.now() + ( timeoutInMin * 60 * 1000);	
+		timeOutTime = Date.now() + ( timeoutInMin * 60 * 1000);
 		taskTimerOn = true;
 	}
 	
 	function stopTaskTimer(){
-		taskTimerOn = false;		
+		taskTimerOn = false;
 	}
 	
 	
@@ -316,14 +314,14 @@ var experimentController = (function() {
 	
 	//log task states
 	//***************
-	function onEntityMarked(applicationEvent) {		
+	function onEntityMarked(applicationEvent) {	
 		if(!currentStep.entities){
 			return;
 		}
 		
-		var taskState = getTaskState();		
+		var taskState = getTaskState();
 
-		var entity = applicationEvent.entities[0];		
+		var entity = applicationEvent.entities[0];
 		
 		events.log.controller.publish({ text: "experimentController", var1: currentStep.number, var2: taskState.missingMarks, var3: taskState.falseMarks, var4: entity.qualifiedName });
 	}
@@ -332,13 +330,13 @@ var experimentController = (function() {
 		
 		var markedEntites = events.marked.getEntities();
 		
-		var taskEntitiesIds = currentStep.entities;			
+		var taskEntitiesIds = currentStep.entities;
 		
 		var correctMarks = 0;
 		var falseMarks = 0;
 		var missingMarks = 0;
 		
-		for(var i = 0; i < taskEntitiesIds.length; i++) {				
+		for(var i = 0; i < taskEntitiesIds.length; i++) {
 			if(markedEntites.has(taskEntitiesIds[i])){
 				correctMarks++;
 			} else {
