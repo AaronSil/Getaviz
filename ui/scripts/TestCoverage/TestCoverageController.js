@@ -90,7 +90,6 @@ var testCoverageController = (function() {
 	
 	function createUI(parent) {
 		parent.id = "testCoverageDiv";
-		parent.style = "margin: 1rem;";
 		parent.parentNode.style = parent.parentNode.getAttribute("style") + " overflow-y: scroll;";
 		
 		// "Settings"
@@ -125,51 +124,11 @@ var testCoverageController = (function() {
 				setThreshold(lower, upper);
 			}
 		});
-		
-		// input menu 1-3 + input text for threshold
-		if(controllerConfig.hmDropdown) {
-			container = document.createElement("div");
-			parent.appendChild(container);
-			hmDescription = document.createElement("span");
-			hmDescription.style = "font-size: 0.75rem;";
-			hmDescription.innerText = "Highlight mode:";
-			container.appendChild(hmDescription);
-			let hmDropdownDiv = document.createElement("div");
-			hmDropdownDiv.id = "hmDropdown";
-			hmDropdownDiv.style = "display: inline; float: right;";
-			container.appendChild(hmDropdownDiv);
-			
-			let items = [];
-			let selected = 0;
-			Object.values(highlightModes).forEach(function(el, index) {
-				items.push(el.toLowerCase());
-				if(controllerConfig.highlightOn.toLowerCase() == items[index]) {
-					selected = index;
-				}
-			});
-			$div = $("#hmDropdown").jqxDropDownList({
-				width: "50%",
-				height: "1rem",
-				source: items,
-				selectedIndex: selected
-			});
-			
-			$("#hmDropdown").on("select", function(event) {
-				let item = $("#hmDropdown").jqxDropDownList("getSelectedItem");
-				controllerConfig.highlightOn = highlightModes[item.value.toUpperCase()];
-				if(controllerConfig.highlightOn == highlightModes.THRESHOLD) {
-					$("#thresholdInput").jqxInput("disabled", false);
-				} else {
-					$("#thresholdInput").jqxInput({disabled: true});
-				}
-				reapplyColors();
-			});
-		}
+		// Type Dropdown List
 		if(controllerConfig.typeDropdown) {
 			container = document.createElement("div");
 			parent.appendChild(container);
 			typeDescription = document.createElement("span");
-			typeDescription.style = "font-size: 0.75rem;";
 			typeDescription.innerText = "Coverage type:";
 			container.appendChild(typeDescription);
 			let typeDropdownDiv = document.createElement("div");
@@ -198,37 +157,93 @@ var testCoverageController = (function() {
 			});
 		}
 		
-		// Class and Namespace checkbox
+		// Entity name and coverage bar
+		sectionHeading = document.createElement("h3");
+		sectionHeading.innerText = "Selected Entity:";
+		parent.appendChild(sectionHeading);
 		container = document.createElement("div");
-		parent.appendChild(container)
-		let checkboxText = document.createElement("span");
-		checkboxText.style = "font-size: 0.75rem;";
-		checkboxText.innerText = "Apply colors to: ";
-		container.appendChild(checkboxText);
-		let classesCheckbox = document.createElement("div");
-		classesCheckbox.id = "classesCheckbox";
-		classesCheckbox.style = "display: inline-block; float: right;";
-		classesCheckbox.innerText = "Classes";
-		container.appendChild(classesCheckbox);
-		$("#classesCheckbox").jqxCheckBox({ checked: controllerConfig.colorClasses });
-		$("#classesCheckbox").bind('change', function (event) {
-			toggleColorClasses();
+		parent.appendChild(container);
+		controllerConfig.ui = true;
+		let entityTypeLabel = document.createElement("span");
+		entityTypeLabel.id = "entityTypeLabel";
+		entityTypeLabel.innerText = "Type:";
+		container.appendChild(entityTypeLabel);
+		container.appendChild(document.createElement("br"));
+		let entityNameLabel = document.createElement("span");
+		entityNameLabel.id = "entityNameLabel";
+		entityNameLabel.style = "float: right;";
+		container.appendChild(entityNameLabel);
+		container.appendChild(document.createElement("br"));
+		let tmpLabel = document.createElement("span");
+		tmpLabel.innerText = "Belongs to:";
+		container.appendChild(tmpLabel);
+		container.appendChild(document.createElement("br"));
+		let belongsToLabel = document.createElement("span");
+		belongsToLabel.id = "belongsToLabel";
+		belongsToLabel.style = "float: right";
+		container.appendChild(belongsToLabel);
+		
+		container = document.createElement("div");
+		container.id = "entityCoverageDiv";
+		parent.appendChild(container);
+		
+		let coverageOf = document.createElement("span");
+		coverageOf.id = "coverageOfLabel";
+		coverageOf.innerText = "Package/Class Coverage:";
+		container.appendChild(coverageOf);
+		container.appendChild(document.createElement("br"));
+		Object.values(coverageType).forEach(function(type) {
+			let innerContainer = document.createElement("div");
+			container.appendChild(innerContainer);
+			let coverageTypeLabel = document.createElement("span");
+			coverageTypeLabel.innerText = type+":";
+			container.appendChild(coverageTypeLabel);
+			let elementCoverageBar = document.createElement("div");
+			elementCoverageBar.id = type+"Bar";
+			elementCoverageBar.style = "display: inline; float: right;";
+			innerContainer.appendChild(elementCoverageBar);
+			let progressBar = $("#"+type+"Bar").jqxProgressBar({
+				width: "50%",
+				height: "0.75rem",
+				showText: true
+			});
+			coverageBars.push(progressBar);
+			container.appendChild(document.createElement("br"));
 		});
-		let packagesCheckbox = document.createElement("div");
-		packagesCheckbox.id = "packagesCheckbox";
-		packagesCheckbox.style = "display: inline-block; float: right;";
-		packagesCheckbox.innerText = "Packages";
-		container.appendChild(packagesCheckbox);
-		$("#packagesCheckbox").jqxCheckBox({ checked: controllerConfig.colorNamespaces });
-		$("#packagesCheckbox").bind('change', function (event) {
-			toggleColorNamespaces();
-		});
+		console.debug(coverageBars);
+		parent.appendChild(container);
+		
+		// Class and Namespace checkbox
+		if(controllerConfig.coloringCheckboxes) {
+			container = document.createElement("div");
+			parent.appendChild(container)
+			let checkboxText = document.createElement("span");
+			checkboxText.innerText = "Apply colors to: ";
+			container.appendChild(checkboxText);
+			let classesCheckbox = document.createElement("div");
+			classesCheckbox.id = "classesCheckbox";
+			classesCheckbox.style = "display: inline-block; float: right;";
+			classesCheckbox.innerText = "Classes";
+			container.appendChild(classesCheckbox);
+			$("#classesCheckbox").jqxCheckBox({ checked: controllerConfig.colorClasses });
+			$("#classesCheckbox").bind('change', function (event) {
+				toggleColorClasses();
+			});
+			let packagesCheckbox = document.createElement("div");
+			packagesCheckbox.id = "packagesCheckbox";
+			packagesCheckbox.style = "display: inline-block; float: right;";
+			packagesCheckbox.innerText = "Packages";
+			container.appendChild(packagesCheckbox);
+			$("#packagesCheckbox").jqxCheckBox({ checked: controllerConfig.colorNamespaces });
+			$("#packagesCheckbox").bind('change', function (event) {
+				toggleColorNamespaces();
+			});
+		}
 		
 		if(controllerConfig.spheresCheckboxes) {
 			container = document.createElement("div");
 			parent.appendChild(container)
 			let checkboxText = document.createElement("span");
-			checkboxText.style = "font-size: 0.75rem;";
 			checkboxText.innerText = "Show spheres around: ";
 			container.appendChild(checkboxText);
 			
@@ -253,8 +268,6 @@ var testCoverageController = (function() {
 			});
 		}
 		
-		if(controllerConfig.visDropdown) {
-		}
 		if(controllerConfig.treemap) {
 			let treeMapDiv = document.createElement("div");
 			treeMapDiv.id = "treeMap";
@@ -278,7 +291,7 @@ var testCoverageController = (function() {
 							events.selected.on.publish(applicationEvent);
 						});
 						element.jqxTooltip({
-							content: "<div><div style='font-weight: bold; max-width: 200px; font-family: verdana; font-size: 13px;'>" + value.data.fqn + "</div><div style='width: 200px; font-family: verdana; font-size: 12px;'>Coverage: " + Math.round(value.data.statementCoverage * 100)+"%" + "</div></div>",
+							content: "<div><div style='font-weight: bold; max-width: 200px; font-family: verdana; font-size: 12px;'>" + value.data.fqn + "</div><div style='width: 200px; font-family: verdana; font-size: 12px;'>Coverage: " + Math.round(value.data.statementCoverage * 100)+"%" + "</div></div>",
 							position: "mouse",
 							autoHideDelay: 6000
 						});
