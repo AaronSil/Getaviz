@@ -1,8 +1,8 @@
 var testCoverageController = (function() {
 	
 	var effects = [];
-	var entityEffectMap = new Map();
 	var selectedEntity;
+	var coverageBars = [];
 	
 	var treeMapData = [];
 	
@@ -24,8 +24,10 @@ var testCoverageController = (function() {
 		METHOD: "methodCoverage"
 	};
 	
-	let visualization = {
-		COLOR_CODE: "COLOR_CODE"
+	let visualization = { // without functionality so far
+		COLOR_CODE: "COLOR_CODE",
+		TRANSPARENCY: "TRANSPARENCY",
+		SPHERES: "SPHERES"
 	};
 	
 	//config parameters	
@@ -33,6 +35,8 @@ var testCoverageController = (function() {
 		highlightOn: highlightModes.THRESHOLD,
 		coverageType: coverageType.COMPLEXITY,
 		threshold: 80,
+		lowerThreshold: 0,
+		upperThreshold: 80,
 		visualization: visualization.COLOR_CODE,
 		// if any of the following is true a dedicated ui element is being created in the view.
 		hmDropdown: false, // refers to highlightModeDropdown
