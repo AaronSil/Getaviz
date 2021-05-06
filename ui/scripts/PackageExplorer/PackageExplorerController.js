@@ -11,6 +11,8 @@ var packageExplorerController = (function() {
 		typeIcon:    "scripts/PackageExplorer/images/type_icon.png",
 		fieldIcon:   "scripts/PackageExplorer/images/field_icon.png",
 		methodIcon:  "scripts/PackageExplorer/images/method_icon.png",
+		codeCoverage: true,
+		codeCovImg:  null,
 		elementsSelectable: true
 	};
 	
