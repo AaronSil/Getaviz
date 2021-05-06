@@ -6,12 +6,12 @@ var packageExplorerController = (function() {
 	let tree;
 
 	let controllerConfig = {
-		projectIcon: 	"scripts/PackageExplorer/images/project.png",
-		packageIcon: 	"scripts/PackageExplorer/images/package.png",
-		typeIcon: 		"scripts/PackageExplorer/images/type.png",
-		fieldIcon: 		"scripts/PackageExplorer/images/field.png",
-		methodIcon:		"scripts/PackageExplorer/images/method.png",
-        elementsSelectable: true
+		projectIcon: "scripts/PackageExplorer/images/project.png",
+		packageIcon: "scripts/PackageExplorer/images/package_icon.png",
+		typeIcon:    "scripts/PackageExplorer/images/type_icon.png",
+		fieldIcon:   "scripts/PackageExplorer/images/field_icon.png",
+		methodIcon:  "scripts/PackageExplorer/images/method_icon.png",
+		elementsSelectable: true
 	};
 	
 	function initialize(setupConfig){
