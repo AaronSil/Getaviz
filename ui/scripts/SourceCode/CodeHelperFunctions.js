@@ -66,8 +66,47 @@ var codeHelperFunction =(function(){
     }
 
     // hebt alle Vorkommen des selektierten Elements besonders hervor 
-    function highlightSelectedElement(entity){
-        if(typeof entity === "undefined") {
+	function highlightSelectedElement(entity) {
+		if(entity == undefined) {
+			return
+		}
+		let codeTag = $("#codeTag").get(0);
+		let codeSpans = codeTag.childNodes;
+		let scrollOffset = 	0;
+		if(entity.type == "Attribute") {
+			let re = new RegExp("private.*"+entity.name+".*;");
+			let matchingLines = Array.from(codeSpans).filter(function(el) {
+				return re.test(el.innerText);
+			});
+			if(matchingLines.length == 0) {
+				re = new RegExp("public.*"+entity.name+".*;");
+				matchingLines = Array.from(codeSpans).filter(function(el) {
+					return re.test(el.innerText);
+				});
+			}
+			if(matchingLines.length != 0) {
+				scrollOffset = matchingLines[0].offsetTop;
+			}
+		} else if(entity.type == "Method") {
+			let re = new RegExp("private.*"+entity.name+".*{");
+			let matchingLines = Array.from(codeSpans).filter(function(el) {
+				return re.test(el.innerText);
+			});
+			if(matchingLines.length == 0) {
+				re = new RegExp("public.*"+entity.name+".*{");
+				matchingLines = Array.from(codeSpans).filter(function(el) {
+					return re.test(el.innerText);
+				});
+			}
+			if(matchingLines.length != 0) {
+				scrollOffset = matchingLines[0].offsetTop;
+			}
+		} else {
+		}
+		$("#UI0_codeViewer .jqx-widget-content").animate({ scrollTop: scrollOffset }, 1000);
+		
+		
+        /*if(typeof entity === "undefined") {
             return;
         }    
         if ( entity.type === "Attribute" ){                    
@@ -99,8 +138,8 @@ var codeHelperFunction =(function(){
         } else {
 			// Klasse selektiert, scrolle ganz nach oben
 			$('html, body, pre, code').animate( { scrollTop: 0 }, 1000);
-		}        
-    }
+		}*/        
+	}
 	
 	
 	// Klick im Quellcode auf Attribut- oder Methodendefinition entspricht einer Selektion 
