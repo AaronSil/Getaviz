@@ -84,7 +84,6 @@ var sourceCodeController = (function(){
                     let codePre = document.createElement("PRE");
                     codePre.className = "line-numbers language-"+controllerConfig.fileType;
                     codePre.id = "codePre";
-                    codePre.style = "overflow:auto; height:100vh;";
 
                     let codeTag = document.createElement("CODE");
                     codeTag.id = "codeTag";
