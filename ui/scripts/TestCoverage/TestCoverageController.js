@@ -537,21 +537,23 @@ var testCoverageController = (function() {
 	}
 	
 	function updateCoverageBars() {
-		let entityWithCoverage = selectedEntity;
-		if(selectedEntity.type != "Class" && selectedEntity.type != "Namespace") {
-			entityWithCoverage = selectedEntity.belongsTo;
-		}
-		Object.values(coverageBars).forEach(function(bar) {
-			let type = bar[0].id.replace("Bar", "");
-			if(entityWithCoverage.testCoverage[type] !== undefined) {
-				let color = calculateColor(entityWithCoverage.testCoverage[type]);
-				let hexString = rgbToHex(color);
-				let colorRanges = [ { stop: 100, color: hexString } ];
-				$("#"+type+"Bar").jqxProgressBar({value: parseInt(100 * entityWithCoverage.testCoverage[type]), colorRanges: colorRanges, disabled: false});
-			} else {
-				$("#"+type+"Bar").jqxProgressBar({disabled: true});
+		if(selectedEntity) {
+			let entityWithCoverage = selectedEntity;
+			if(selectedEntity.type != "Class" && selectedEntity.type != "Namespace") {
+				entityWithCoverage = selectedEntity.belongsTo;
 			}
-		});
+			Object.values(coverageBars).forEach(function(bar) {
+				let type = bar[0].id.replace("Bar", "");
+				if(entityWithCoverage.testCoverage[type] !== undefined) {
+					let color = calculateColor(entityWithCoverage.testCoverage[type]);
+					let hexString = rgbToHex(color);
+					let colorRanges = [ { stop: 100, color: hexString } ];
+					$("#"+type+"Bar").jqxProgressBar({value: parseInt(100 * entityWithCoverage.testCoverage[type]), colorRanges: colorRanges, disabled: false});
+				} else {
+					$("#"+type+"Bar").jqxProgressBar({disabled: true});
+				}
+			});
+		}
 	}
 	
 	function setCoverageType(typeOrIndex) {
