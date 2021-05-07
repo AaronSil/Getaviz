@@ -247,8 +247,11 @@ var packageExplorerController = (function() {
 		};
 		
 		//create zTree
-        tree = $.fn.zTree.init( $(jQPackageExplorerTree), settings, items);
-    }
+		tree = $.fn.zTree.init( $(jQPackageExplorerTree), settings, items);
+		// expand and collapse whole tree in order to initialize all items
+		tree.expandAll(true);
+		tree.expandAll(false);
+	}
     
 	
 	function zTreeOnCheck(event, treeId, treeNode) {
