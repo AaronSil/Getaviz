@@ -6,6 +6,21 @@ var tooltipController = (function() {
 	
 	function initialize(setupConfig) {
 		application.transferConfigParams(setupConfig, controllerConfig);
+		
+		events.hovered.on.subscribe(onEntityHover);
+		events.hovered.off.subscribe(onEntityUnhover);
+	}
+	
+	function onEntityHover(applicationEvent) {
+		if(controllerConfig.activated) {
+			
+		}
+	}
+	
+	function onEntityUnhover(applicationEvent) {
+		if(controllerConfig.activated) {
+			
+		}
 	}
 	
 	function toggleController() {
