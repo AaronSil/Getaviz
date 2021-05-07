@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   sodipodi:docname="colorable_circle.svg"
+   inkscape:version="1.0 (unknown)"
+   id="svg8"
+   version="1.1"
+   viewBox="0 0 13.229166 13.229166"
+   height="13.229166mm"
+   width="13.229166mm">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     inkscape:window-maximized="1"
+     inkscape:window-y="0"
+     inkscape:window-x="0"
+     inkscape:window-height="1019"
+     inkscape:window-width="1920"
+     showgrid="false"
+     inkscape:document-rotation="0"
+     inkscape:current-layer="layer1"
+     inkscape:document-units="mm"
+     inkscape:cy="25.062"
+     inkscape:cx="28.8737"
+     inkscape:zoom="15.839192"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     borderopacity="1.0"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     id="base" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(-0.38153219,-0.12617159)"
+     id="layer1"
+     inkscape:groupmode="layer"
+     inkscape:label="Ebene 1">
+    <path
+       transform="matrix(0.26458333,0,0,0.26458333,0.38153219,0.12617159)"
+       d="M -0.044921875 -0.013671875 L -0.044921875 50.197266 L 49.939453 50.197266 L 49.939453 -0.013671875 L -0.044921875 -0.013671875 z M 24.947266 0.4140625 A 24.67709 24.67709 0 0 1 49.625 25.091797 A 24.67709 24.67709 0 0 1 24.947266 49.769531 A 24.67709 24.67709 0 0 1 0.27148438 25.091797 A 24.67709 24.67709 0 0 1 24.947266 0.4140625 z "
+       style="fill:#ffffff;stroke:none;stroke-width:3.77953"
+       id="rect831" />
+  </g>
+</svg>

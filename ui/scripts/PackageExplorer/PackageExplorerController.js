@@ -1,17 +1,21 @@
 var packageExplorerController = (function() {
-    
+	
 	let packageExplorerTreeID = "packageExplorerTree";
 	let jQPackageExplorerTree = "#packageExplorerTree";
 	
 	let tree;
+	
+	let codeCovDivs = new Map();
 
 	let controllerConfig = {
-		projectIcon: 	"scripts/PackageExplorer/images/project.png",
-		packageIcon: 	"scripts/PackageExplorer/images/package.png",
-		typeIcon: 		"scripts/PackageExplorer/images/type.png",
-		fieldIcon: 		"scripts/PackageExplorer/images/field.png",
-		methodIcon:		"scripts/PackageExplorer/images/method.png",
-        elementsSelectable: true
+		projectIcon: "scripts/PackageExplorer/images/project.png",
+		packageIcon: "scripts/PackageExplorer/images/package_icon.png",
+		typeIcon:    "scripts/PackageExplorer/images/type_icon.png",
+		fieldIcon:   "scripts/PackageExplorer/images/field_icon.png",
+		methodIcon:  "scripts/PackageExplorer/images/method_icon.png",
+		codeCoverage: true,
+		codeCovImg:  "scripts/PackageExplorer/images/colorable_shield.png",
+		elementsSelectable: true
 	};
 	
 	function initialize(setupConfig){
@@ -19,30 +23,44 @@ var packageExplorerController = (function() {
     }
 	
 	function activate(rootDiv){
-        //create zTree div-container
+		// create “collapseAll” button
+		let btnContainer = document.createElement("div");
+		btnContainer.style = "width: 100%; margin-left: -1rem; border-bottom: solid 1px #e5e5e5; background-color: #f4f4f4; padding: 0.5rem; position: absolute; top: 1.5rem";
+		rootDiv.appendChild(btnContainer);
+		let collapseBtn = document.createElement("div");
+		collapseBtn.id = "collapseZTreeBtn";
+		collapseBtn.innerText = "Collapse All";
+		btnContainer.appendChild(collapseBtn);
+		$("#collapseZTreeBtn").jqxButton({ theme: "metro" });
+		$("#collapseZTreeBtn").on("click", function(event) {
+			tree.expandAll(false);
+		});
+		
+		//create zTree div-container
 		let zTreeDiv = document.createElement("DIV");
 		zTreeDiv.id = "zTreeDiv";
-				
+		zTreeDiv.style = "margin-top: 2.5rem";
+		
 		let packageExplorerTreeUL = document.createElement("UL");
 		packageExplorerTreeUL.id = packageExplorerTreeID;
 		packageExplorerTreeUL.setAttribute("class", "ztree");
-				
+		
 		zTreeDiv.appendChild(packageExplorerTreeUL);
 		rootDiv.appendChild(zTreeDiv);
-				
+		
 		//create zTree
 		prepareTreeView();
 		events.selected.on.subscribe(onEntitySelected);
-    }
+	}
 	
 	function reset(){
 		prepareTreeView();
 	}
-    
-    function prepareTreeView() {
-        
-        let entities = model.getCodeEntities();
-        let items = [];
+	
+	function prepareTreeView() {
+		
+		let entities = model.getCodeEntities();
+		let items = [];
 		
 		//build items for ztree
 		entities.forEach(function(entity) {
@@ -55,71 +73,73 @@ var packageExplorerController = (function() {
 				&& entity.type !== "And" && entity.type !== "Or"
 				&& entity.type !== "Negation") {
 					if(entity.type === "Namespace" || entity.type === "TranslationUnit") {
-                        item = {
-                            id: entity.id,
-                            open: false,
-                            checked: true,
-                            parentId: "",
-                            name: entity.name,
-                            icon: controllerConfig.packageIcon,
-                            iconSkin: "zt"
-                        };
-                    } else {
-                        item = {
-                            id: entity.id,
-                            open: true,
-                            checked: true,
-                            parentId: "",
-                            name: entity.name,
-                            icon: controllerConfig.projectIcon,
-                            iconSkin: "zt"
-                        };
-                    }
-                }
-            } else {	
+						item = {
+							id: entity.id,
+							open: false,
+							checked: true,
+							parentId: "",
+							name: entity.name,
+							icon: controllerConfig.packageIcon,
+							iconSkin: "zt",
+							type: entity.type
+						};
+					} else {
+						item = {
+							id: entity.id,
+							open: true,
+							checked: true,
+							parentId: "",
+							name: entity.name,
+							icon: controllerConfig.projectIcon,
+							iconSkin: "zt",
+							type: entity.type
+						};
+					}
+				}
+			} else {
 				switch(entity.type) {
 					case "Project":
-						item = { id: entity.id, open: true, checked: true, parentId: entity.belongsTo.id, name: entity.name, icon: controllerConfig.projectIcon, iconSkin: "zt"};
+						item = { id: entity.id, open: true, checked: true, parentId: entity.belongsTo.id, name: entity.name, icon: controllerConfig.projectIcon, iconSkin: "zt", type: entity.type};
 						break;
 					case "Namespace":
-						item = { id: entity.id, open: false, checked: true, parentId: entity.belongsTo.id, name: entity.name, icon: controllerConfig.packageIcon, iconSkin: "zt"};
+						item = { id: entity.id, open: false, checked: true, parentId: entity.belongsTo.id, name: entity.name, icon: controllerConfig.packageIcon, iconSkin: "zt", type: entity.type};
 						break;
 					case "Class":
-                        if(entity.id.endsWith("_2") || entity.id.endsWith("_3")){
-                            break;
-                        };
-						item = { id: entity.id, open: false, checked: true, parentId: entity.belongsTo.id, name: entity.name, icon: controllerConfig.typeIcon, iconSkin: "zt"};
+						if(entity.id.endsWith("_2") || entity.id.endsWith("_3")) {
+							break;
+						};
+						item = { id: entity.id, open: false, checked: true, parentId: entity.belongsTo.id, name: entity.name, icon: controllerConfig.typeIcon, iconSkin: "zt", type: entity.type};
 						break;
 					case  "ParameterizableClass":
-						item = { id: entity.id, open: false, checked: true, parentId: entity.belongsTo.id, name: entity.name, icon: controllerConfig.typeIcon, iconSkin: "zt"};
+						item = { id: entity.id, open: false, checked: true, parentId: entity.belongsTo.id, name: entity.name, icon: controllerConfig.typeIcon, iconSkin: "zt", type: entity.type};
 						break;
 					case "Enum":
-						item = { id: entity.id, open: false, checked: true, parentId: entity.belongsTo.id, name: entity.name, icon: controllerConfig.typeIcon, iconSkin: "zt"};
+						item = { id: entity.id, open: false, checked: true, parentId: entity.belongsTo.id, name: entity.name, icon: controllerConfig.typeIcon, iconSkin: "zt", type: entity.type};
 						break;
 					case "EnumValue":
-						item = { id: entity.id, open: false, checked: true, parentId: entity.belongsTo.id, name: entity.name, icon: controllerConfig.fieldIcon, iconSkin: "zt"};
+						item = { id: entity.id, open: false, checked: true, parentId: entity.belongsTo.id, name: entity.name, icon: controllerConfig.fieldIcon, iconSkin: "zt", type: entity.type};
 						break;
 					case "Attribute":
 					case "Variable":
-						item = { id: entity.id, open: false, checked: true, parentId: entity.belongsTo.id, name: entity.name, icon: controllerConfig.fieldIcon, iconSkin: "zt"};
+						item = { id: entity.id, open: false, checked: true, parentId: entity.belongsTo.id, name: entity.name, icon: controllerConfig.fieldIcon, iconSkin: "zt", type: entity.type};
 						break;
 					case "Method":
 					case "Function":
-						item = { id: entity.id, open: false, checked: true, parentId: entity.belongsTo.id, name: entity.name, icon: controllerConfig.methodIcon, iconSkin: "zt"};
+						item = { id: entity.id, open: false, checked: true, parentId: entity.belongsTo.id, name: entity.name, icon: controllerConfig.methodIcon, iconSkin: "zt", type: entity.type};
 						break;
 					case "Struct":
 					case "Union":
-						item = { id: entity.id, open: false, checked: true, parentId: entity.belongsTo.id, name: entity.name, icon: controllerConfig.typeIcon, iconSkin: "zt"};
+						item = { id: entity.id, open: false, checked: true, parentId: entity.belongsTo.id, name: entity.name, icon: controllerConfig.typeIcon, iconSkin: "zt", type: entity.type};
 						break;
-					default: 
+					default:
 						events.log.warning.publish({ text: "FamixElement not in tree: " + entity.type});
 
 						return;
 				}
-           }
+					}
 			if(item !== undefined) {
-                items.push(item);
-            }
+								items.push(item);
+						}
 		});
 		
 		//Sortierung nach Typ und Alphanumerisch
@@ -168,53 +188,55 @@ var packageExplorerController = (function() {
 				}
 				if (sortStringA > sortStringB){
 					return 1;
-				}			
+				}
 				
 				return 0;
 			}
 		);
-
+		
 		//zTree settings
 		var settings = {
-            check: {
-                enable: controllerConfig.elementsSelectable,
-                chkboxType: {"Y": "ps", "N": "s"}
-            },
-            data: {
-                simpleData: {
-                enable:true,
-                idKey: "id",
-                pIdKey: "parentId",
-                rootPId: ""
-                }
-            },
-            callback: {
-                onCheck: zTreeOnCheck,
-                onClick: zTreeOnClick
-            },
-            view:{
-                showLine: false,
-                showIcon: true,
-                selectMulti: false
-            }
-
-        };		
+			check: {
+				enable: controllerConfig.elementsSelectable,
+				chkboxType: {"Y": "ps", "N": "s"}
+			},
+			data: {
+				simpleData: {
+					enable:true,
+					idKey: "id",
+					pIdKey: "parentId",
+					rootPId: ""
+				}
+			},
+			callback: {
+				onCheck: zTreeOnCheck,
+				onClick: zTreeOnClick
+			},
+			view:{
+				showLine: false,
+				showIcon: true,
+				selectMulti: false,
+				addDiyDom: appendCodeCov
+			}
+		};
 		
 		//create zTree
-        tree = $.fn.zTree.init( $(jQPackageExplorerTree), settings, items);
-    }
-    
+		tree = $.fn.zTree.init( $(jQPackageExplorerTree), settings, items);
+		// expand and collapse whole tree in order to initialize all items
+		tree.expandAll(true);
+		tree.expandAll(false);
+	}
 	
 	function zTreeOnCheck(event, treeId, treeNode) {
-        var nodes = tree.getChangeCheckedNodes();
-        
+		var nodes = tree.getChangeCheckedNodes();
+		
 		var entities = [];
 		nodes.forEach(function(node){
-			node.checkedOld = node.checked; //fix zTree bug on getChangeCheckedNodes	
+			node.checkedOld = node.checked; //fix zTree bug on getChangeCheckedNodes
 			entities.push(model.getEntityById(node.id));
 		});
-								
-		var applicationEvent = {			
+		
+		var applicationEvent = {
 			sender: 	packageExplorerController,
 			entities:	entities
 		};
@@ -224,30 +246,43 @@ var packageExplorerController = (function() {
 		} else {
 			events.filtered.off.publish(applicationEvent);
 		}
-		
-    }
-
-    function zTreeOnClick(treeEvent, treeId, treeNode) {
-        var applicationEvent = {
+	}
+	
+	function zTreeOnClick(treeEvent, treeId, treeNode) {
+		var applicationEvent = {
 			sender: packageExplorerController,
 			entities: [model.getEntityById(treeNode.id)]
 		};
 		events.selected.on.publish(applicationEvent);
-    }
-	
-	function onEntitySelected(applicationEvent) {
-        if(applicationEvent.sender !== packageExplorerController) {
-			var entity = applicationEvent.entities[0];
-			var item = tree.getNodeByParam("id", entity.id, null);            
-			tree.selectNode(item, false);
-        }
 	}
 	
+	function onEntitySelected(applicationEvent) {
+		if(applicationEvent.sender !== packageExplorerController) {
+			var entity = applicationEvent.entities[0];
+			var item = tree.getNodeByParam("id", entity.id, null);
+			tree.selectNode(item, false);
+		}
+	}
 	
-	
-	
-	
-	
+	function appendCodeCov(treeId, treeNode) {
+		let item = $("#" + treeNode.tId + "_a");
+		if ($("#diyBtn_"+treeNode.id).length>0) return;
+		if(controllerConfig.codeCoverage && (treeNode.type == "Namespace" || treeNode.type == "Class")) {
+			let codeCovDiv = document.createElement("div");
+			codeCovDiv.id = treeNode.id + "CodeCov";
+			if(controllerConfig.codeCovImg == null) {
+				codeCovDiv.classList += "coloredCircle";
+				codeCovDiv.style = "background-color: black;";
+			} else {
+				codeCovDiv = document.createElement("img");
+				codeCovDiv.setAttribute("src", controllerConfig.codeCovImg);
+				codeCovDiv.classList += "coloredImg";
+				codeCovDiv.style += "background-color: black;";
+			}
+			codeCovDivs.set(treeNode.id, codeCovDiv);
+			item.append(codeCovDiv);
+		}
+	}
 	
 	/*
     function zTreeOnCheck(event, treeId, treeNode) {
@@ -305,9 +340,11 @@ var packageExplorerController = (function() {
     }
 	*/
     
-    return {
-        initialize: initialize,
+	return {
+		initialize: initialize,
 		activate: activate,
-		reset: reset
-    };
+		reset: reset,
+		
+		codeCovDivs: codeCovDivs
+	};
 })();

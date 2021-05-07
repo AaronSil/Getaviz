@@ -94,3 +94,19 @@
     border-color: #e5e5e5;
 }
 
+.coloredCircle {
+	display: inline-block;
+	width: 1rem;
+	height: 1rem;
+	border-radius: 50vh;
+	margin: 0.25rem;
+	margin-bottom: -0.25rem;
+}
+
+.coloredImg {
+	display: inline-block;
+	width: 1rem;
+	height: 1rem;
+	margin: 0.25rem;
+	margin-bottom: -0.25rem;
+}

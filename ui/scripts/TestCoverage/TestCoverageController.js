@@ -43,7 +43,8 @@ var testCoverageController = (function() {
 		coloringCheckboxes: false,
 		spheresCheckboxes: false,
 		classSpheres: false,
-		packageSpheres: false
+		packageSpheres: false,
+		showInExplorer: true
 	};
 	
 	
@@ -58,6 +59,7 @@ var testCoverageController = (function() {
 		
 		createUI(parent);
 		reapplyColors();
+		colorExplorerDivs();
 	}
 	
 	function createUI(parent) {
@@ -362,12 +364,12 @@ var testCoverageController = (function() {
 		}
 		if(entity.testCoverage[controllerConfig.coverageType] !== undefined) {
 			let color = calculateColor(entity.testCoverage[controllerConfig.coverageType]);
-			let hexString = "#";
-			for(el in color) {
-				if(color[el].toString(16).length == 1) {
-					hexString += 0;
+			let hexString = chroma(color.r, color.g, color.b).hex();
+			if(controllerConfig.showInExplorer) {
+				let div = packageExplorerController.codeCovDivs.get(entity.id);
+				if(div) {
+					div.style = "background-color: " + hexString + ";";
 				}
-				hexString += color[el].toString(16);
 			}
 			colorController.addColorToEntity(entity, hexString, "testCoverageController");
 		}
@@ -535,21 +537,23 @@ var testCoverageController = (function() {
 	}
 	
 	function updateCoverageBars() {
-		let entityWithCoverage = selectedEntity;
-		if(selectedEntity.type != "Class" && selectedEntity.type != "Namespace") {
-			entityWithCoverage = selectedEntity.belongsTo;
-		}
-		Object.values(coverageBars).forEach(function(bar) {
-			let type = bar[0].id.replace("Bar", "");
-			if(entityWithCoverage.testCoverage[type] !== undefined) {
-				let color = calculateColor(entityWithCoverage.testCoverage[type]);
-				let hexString = rgbToHex(color);
-				let colorRanges = [ { stop: 100, color: hexString } ];
-				$("#"+type+"Bar").jqxProgressBar({value: parseInt(100 * entityWithCoverage.testCoverage[type]), colorRanges: colorRanges, disabled: false});
-			} else {
-				$("#"+type+"Bar").jqxProgressBar({disabled: true});
+		if(selectedEntity) {
+			let entityWithCoverage = selectedEntity;
+			if(selectedEntity.type != "Class" && selectedEntity.type != "Namespace") {
+				entityWithCoverage = selectedEntity.belongsTo;
 			}
-		});
+			Object.values(coverageBars).forEach(function(bar) {
+				let type = bar[0].id.replace("Bar", "");
+				if(entityWithCoverage.testCoverage[type] !== undefined) {
+					let color = calculateColor(entityWithCoverage.testCoverage[type]);
+					let hexString = rgbToHex(color);
+					let colorRanges = [ { stop: 100, color: hexString } ];
+					$("#"+type+"Bar").jqxProgressBar({value: parseInt(100 * entityWithCoverage.testCoverage[type]), colorRanges: colorRanges, disabled: false});
+				} else {
+					$("#"+type+"Bar").jqxProgressBar({disabled: true});
+				}
+			});
+		}
 	}
 	
 	function setCoverageType(typeOrIndex) {
@@ -566,6 +570,7 @@ var testCoverageController = (function() {
 		}
 		reapplyColors();
 		updateCoverageBars();
+		colorExplorerDivs();
 		return "Code coverage type set to " + typeOrIndex;
 	}
 	
@@ -581,6 +586,23 @@ var testCoverageController = (function() {
 		document.getElementById("sliderMinLabel").innerText = lower;
 		document.getElementById("sliderMaxLabel").innerText = upper;
 		reapplyColors();
+	}
+	
+	function colorExplorerDivs(threshold=1.0) {
+		if(controllerConfig.showInExplorer) {
+			Array.from(packageExplorerController.codeCovDivs).forEach(function(mapping) {
+				let entity = model.getEntityById(mapping[0]);
+				let div = mapping[1];
+				if(entity.testCoverage[controllerConfig.coverageType] !== undefined) {
+					let coverage = entity.testCoverage[controllerConfig.coverageType];
+					if(coverage < threshold) {
+						let color = calculateColor(entity.testCoverage[controllerConfig.coverageType]);
+						let hexString = chroma(color.r, color.g, color.b).hex();
+						div.style = "background-color: " + hexString + ";";
+					}
+				}
+			});
+		}
 	}
 	
 	function toggleColorClasses() {
@@ -603,6 +625,10 @@ var testCoverageController = (function() {
 		reapplyColors();
 	}
 	
+	function reset() {
+		reapplyColors();
+		colorExplorerDivs();
+	}
 	
 	return {
 		initialize: initialize,

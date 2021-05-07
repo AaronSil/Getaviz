@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   sodipodi:docname="colorable_shield.svg"
+   inkscape:version="1.0 (unknown)"
+   id="svg8"
+   version="1.1"
+   viewBox="0 0 13.229166 13.229166"
+   height="13.229166mm"
+   width="13.229166mm">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     inkscape:snap-global="false"
+     inkscape:window-maximized="1"
+     inkscape:window-y="0"
+     inkscape:window-x="0"
+     inkscape:window-height="1019"
+     inkscape:window-width="1920"
+     showgrid="false"
+     inkscape:document-rotation="0"
+     inkscape:current-layer="layer1"
+     inkscape:document-units="mm"
+     inkscape:cy="6.7474859"
+     inkscape:cx="2.7888767"
+     inkscape:zoom="7.919596"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     borderopacity="1.0"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     id="base" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(-0.38153219,-0.12617159)"
+     id="layer1"
+     inkscape:groupmode="layer"
+     inkscape:label="Ebene 1">
+    <path
+       transform="matrix(0.26458333,0,0,0.26458333,0.38153219,0.12617159)"
+       d="M 0.021484375 0.021484375 L 0.021484375 49.978516 L 49.978516 49.978516 L 49.978516 0.021484375 L 0.021484375 0.021484375 z M 25 1.5683594 C 40.228377 1.5683594 46.207031 6.7734375 46.207031 6.7734375 C 46.207031 21.383164 42.964952 37.553986 25 48.431641 C 7.0350494 37.553986 3.7929688 21.383164 3.7929688 6.7734375 C 3.7929688 6.7734375 9.7716236 1.5683594 25 1.5683594 z "
+       style="fill:#ffffff;stroke-width:3.77953"
+       id="rect831" />
+  </g>
+</svg>
