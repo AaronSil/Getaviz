@@ -4,6 +4,8 @@ var packageExplorerController = (function() {
 	let jQPackageExplorerTree = "#packageExplorerTree";
 	
 	let tree;
+	
+	let codeCovDivs = new Map();
 
 	let controllerConfig = {
 		projectIcon: "scripts/PackageExplorer/images/project.png",
@@ -12,7 +14,7 @@ var packageExplorerController = (function() {
 		fieldIcon:   "scripts/PackageExplorer/images/field_icon.png",
 		methodIcon:  "scripts/PackageExplorer/images/method_icon.png",
 		codeCoverage: true,
-		codeCovImg:  null,
+		codeCovImg:  "scripts/PackageExplorer/images/colorable_shield.png",
 		elementsSelectable: true
 	};
 	
@@ -220,29 +222,29 @@ var packageExplorerController = (function() {
 
 		//zTree settings
 		var settings = {
-            check: {
-                enable: controllerConfig.elementsSelectable,
-                chkboxType: {"Y": "ps", "N": "s"}
-            },
-            data: {
-                simpleData: {
-                enable:true,
-                idKey: "id",
-                pIdKey: "parentId",
-                rootPId: ""
-                }
-            },
-            callback: {
-                onCheck: zTreeOnCheck,
-                onClick: zTreeOnClick
-            },
-            view:{
-                showLine: false,
-                showIcon: true,
-                selectMulti: false
-            }
-
-        };		
+			check: {
+				enable: controllerConfig.elementsSelectable,
+				chkboxType: {"Y": "ps", "N": "s"}
+			},
+			data: {
+				simpleData: {
+					enable:true,
+					idKey: "id",
+					pIdKey: "parentId",
+					rootPId: ""
+				}
+			},
+			callback: {
+				onCheck: zTreeOnCheck,
+				onClick: zTreeOnClick
+			},
+			view:{
+				showLine: false,
+				showIcon: true,
+				selectMulti: false,
+				addDiyDom: appendCodeCov
+			}
+		};
 		
 		//create zTree
         tree = $.fn.zTree.init( $(jQPackageExplorerTree), settings, items);
@@ -287,7 +289,25 @@ var packageExplorerController = (function() {
         }
 	}
 	
-	
+	function appendCodeCov(treeId, treeNode) {
+		let item = $("#" + treeNode.tId + "_a");
+		if ($("#diyBtn_"+treeNode.id).length>0) return;
+		if(controllerConfig.codeCoverage && (treeNode.type == "Namespace" || treeNode.type == "Class")) {
+			let codeCovDiv = document.createElement("div");
+			codeCovDiv.id = treeNode.id + "CodeCov";
+			if(controllerConfig.codeCovImg == null) {
+				codeCovDiv.classList += "coloredCircle";
+				codeCovDiv.style = "background-color: black;";
+			} else {
+				codeCovDiv = document.createElement("img");
+				codeCovDiv.setAttribute("src", controllerConfig.codeCovImg);
+				codeCovDiv.classList += "coloredImg";
+				codeCovDiv.style += "background-color: black;";
+			}
+			codeCovDivs.set(treeNode.id, codeCovDiv);
+			item.append(codeCovDiv);
+		}
+	}
 	
 	
 	
@@ -350,8 +370,10 @@ var packageExplorerController = (function() {
 	*/
     
     return {
-        initialize: initialize,
-		activate: activate,
-		reset: reset
+			initialize: initialize,
+			activate: activate,
+			reset: reset,
+			
+			codeCovDivs: codeCovDivs
     };
 })();
