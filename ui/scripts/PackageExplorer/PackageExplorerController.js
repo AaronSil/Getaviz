@@ -138,46 +138,74 @@ var packageExplorerController = (function() {
             }
 		});
 		
-		//Sortierung nach Typ und Alphanumerisch
-		items.sort(
-			function(a,b) {
-				
-				var sortStringA = "";
-				switch(a.icon){
-					case controllerConfig.packageIcon:
-						sortStringA = "1" + a.name.toUpperCase();
-						break;
-					case controllerConfig.typeIcon:
-						sortStringA = "2" + a.name.toUpperCase();
-						break;
-					case controllerConfig.fieldIcon:
-						sortStringA = "3" + a.name.toUpperCase();
-						break;
-					case controllerConfig.methodIcon:
-						sortStringA = "4" + a.name.toUpperCase();
-						break;
-					default:
-						sortStringA = "0" + a.name.toUpperCase();
+		var item;
+		
+		if(entity.belongsTo === undefined){
+			//rootpackages
+			if(entity.type !== "issue" && entity.type !== "Macro"
+			&& entity.type !== "And" && entity.type !== "Or"
+			&& entity.type !== "Negation") {
+				if(entity.type === "Namespace" || entity.type === "TranslationUnit") {
+					item = {
+						id: entity.id,
+						open: false,
+						checked: true,
+						parentId: "",
+						name: entity.name,
+						icon: controllerConfig.packageIcon,
+						iconSkin: "zt",
+						type: entity.type
+					};
+				} else {
+					item = {
+						id: entity.id,
+						open: true,
+						checked: true,
+						parentId: "",
+						name: entity.name,
+						icon: controllerConfig.projectIcon,
+						iconSkin: "zt",
+						type: entity.type
+					};
 				}
-				
-				var sortStringB = "";
-				switch(b.icon){
-					case controllerConfig.packageIcon:
-						sortStringB = "1" + b.name.toUpperCase();
+			}
+		} else {	
+			switch(entity.type) {
+				case "Project":
+					item = { id: entity.id, open: true, checked: true, parentId: entity.belongsTo.id, name: entity.name, icon: controllerConfig.projectIcon, iconSkin: "zt", type: entity.type};
+					break;
+				case "Namespace":
+					item = { id: entity.id, open: false, checked: true, parentId: entity.belongsTo.id, name: entity.name, icon: controllerConfig.packageIcon, iconSkin: "zt", type: entity.type};
+					break;
+				case "Class":
+					if(entity.id.endsWith("_2") || entity.id.endsWith("_3")) {
 						break;
-					case controllerConfig.typeIcon:
-						sortStringB = "2" + b.name.toUpperCase();
-						break;
-					case controllerConfig.fieldIcon:
-						sortStringB = "3" + b.name.toUpperCase();
-						break;
-					case controllerConfig.methodIcon:
-						sortStringB = "4" + b.name.toUpperCase();
-						break;
-					default:
-						sortStringB = "0" + b.name.toUpperCase();
-						break;
-				}
+					};
+					item = { id: entity.id, open: false, checked: true, parentId: entity.belongsTo.id, name: entity.name, icon: controllerConfig.typeIcon, iconSkin: "zt", type: entity.type};
+					break;
+				case  "ParameterizableClass":
+					item = { id: entity.id, open: false, checked: true, parentId: entity.belongsTo.id, name: entity.name, icon: controllerConfig.typeIcon, iconSkin: "zt", type: entity.type};
+					break;
+				case "Enum":
+					item = { id: entity.id, open: false, checked: true, parentId: entity.belongsTo.id, name: entity.name, icon: controllerConfig.typeIcon, iconSkin: "zt", type: entity.type};
+					break;
+				case "EnumValue":
+					item = { id: entity.id, open: false, checked: true, parentId: entity.belongsTo.id, name: entity.name, icon: controllerConfig.fieldIcon, iconSkin: "zt", type: entity.type};
+					break;
+				case "Attribute":
+				case "Variable":
+					item = { id: entity.id, open: false, checked: true, parentId: entity.belongsTo.id, name: entity.name, icon: controllerConfig.fieldIcon, iconSkin: "zt", type: entity.type};
+					break;
+				case "Method":
+				case "Function":
+					item = { id: entity.id, open: false, checked: true, parentId: entity.belongsTo.id, name: entity.name, icon: controllerConfig.methodIcon, iconSkin: "zt", type: entity.type};
+					break;
+				case "Struct":
+				case "Union":
+					item = { id: entity.id, open: false, checked: true, parentId: entity.belongsTo.id, name: entity.name, icon: controllerConfig.typeIcon, iconSkin: "zt", type: entity.type};
+					break;
+				default: 
+					events.log.warning.publish({ text: "FamixElement not in tree: " + entity.type});
 
 				if (sortStringA < sortStringB){
 					return -1;
