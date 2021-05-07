@@ -150,39 +150,39 @@ var canvasHoverController = (function() {
 			colorController.addHighlightToEntity(entity, "#ffffff", "canvasHoverController");
 		}
 		        
-		$("#tooltipName").text(getTooltipName(entity));
-		if(controllerConfig.showQualifiedName) {
-			$("#tooltipQualifiedName").text(entity.qualifiedName);
-		}
-		if(controllerConfig.showVersion) {
-			$("#tooltipVersion").text("Version: " + entity.version);
-		}
-		if(controllerConfig.showIssues) {
-			let openIssuesSelector = $('#tooltipOpenIssues');
-			let closedIssuesSelector = $('#tooltipClosedIssues');
-			let openSecurityIssuesSelector = $('#tooltipOpenSecurityIssues');
-			let closedSecurityIssuesSelector = $('#tooltipClosedSecurityIssues');
-			if (entity.type === "Namespace") {
-                openIssuesSelector.css("display", "none");
-                closedIssuesSelector.css("display", "none");
-                openSecurityIssuesSelector.css("display", "none");
-                closedSecurityIssuesSelector.css("display", "none");
-            } else {
-                openIssuesSelector.text("Open Issues: " + entity.numberOfOpenIssues);
-            	closedIssuesSelector.text("Closed Issues: " + entity.numberOfClosedIssues);
-                openSecurityIssuesSelector.text("Open Security Issues: " + entity.numberOfOpenSecurityIssues);
-                closedSecurityIssuesSelector.text("Closed Security Issues: " + entity.numberOfClosedSecurityIssues);
-                openIssuesSelector.css("display", "block");
-                closedIssuesSelector.css("display", "block");
-                openSecurityIssuesSelector.css("display", "block");
-                closedSecurityIssuesSelector.css("display", "block");
-            }
-        }
-
-		var tooltip = $("#tooltip");
-        tooltip.css("top", applicationEvent.posY + 50 + "px");
-        tooltip.css("left", applicationEvent.posX + 50 +  "px");
-		tooltip.css("display", "block");
+// 		$("#tooltipName").text(getTooltipName(entity));
+// 		if(controllerConfig.showQualifiedName) {
+// 			$("#tooltipQualifiedName").text(entity.qualifiedName);
+// 		}
+// 		if(controllerConfig.showVersion) {
+// 			$("#tooltipVersion").text("Version: " + entity.version);
+// 		}
+// 		if(controllerConfig.showIssues) {
+// 			let openIssuesSelector = $('#tooltipOpenIssues');
+// 			let closedIssuesSelector = $('#tooltipClosedIssues');
+// 			let openSecurityIssuesSelector = $('#tooltipOpenSecurityIssues');
+// 			let closedSecurityIssuesSelector = $('#tooltipClosedSecurityIssues');
+// 			if (entity.type === "Namespace") {
+//                 openIssuesSelector.css("display", "none");
+//                 closedIssuesSelector.css("display", "none");
+//                 openSecurityIssuesSelector.css("display", "none");
+//                 closedSecurityIssuesSelector.css("display", "none");
+//             } else {
+//                 openIssuesSelector.text("Open Issues: " + entity.numberOfOpenIssues);
+//             	closedIssuesSelector.text("Closed Issues: " + entity.numberOfClosedIssues);
+//                 openSecurityIssuesSelector.text("Open Security Issues: " + entity.numberOfOpenSecurityIssues);
+//                 closedSecurityIssuesSelector.text("Closed Security Issues: " + entity.numberOfClosedSecurityIssues);
+//                 openIssuesSelector.css("display", "block");
+//                 closedIssuesSelector.css("display", "block");
+//                 openSecurityIssuesSelector.css("display", "block");
+//                 closedSecurityIssuesSelector.css("display", "block");
+//             }
+//         }
+// 
+// 		var tooltip = $("#tooltip");
+//         tooltip.css("top", applicationEvent.posY + 50 + "px");
+//         tooltip.css("left", applicationEvent.posX + 50 +  "px");
+// 		tooltip.css("display", "block");
     }
 	
 	function onEntityUnhover(applicationEvent) {
@@ -190,7 +190,7 @@ var canvasHoverController = (function() {
 		
 		colorController.removeHighlightFromEntity(entity, "canvasHoverController");
 		
-		$("#tooltip").css("display", "none");
+// 		$("#tooltip").css("display", "none");
 
     }
 	
