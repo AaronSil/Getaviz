@@ -21,10 +21,24 @@ var packageExplorerController = (function() {
     }
 	
 	function activate(rootDiv){
-        //create zTree div-container
+		// create “collapseAll” button
+		let btnContainer = document.createElement("div");
+		btnContainer.style = "width: 100%; margin-left: -1rem; border-bottom: solid 1px #e5e5e5; background-color: #f4f4f4; padding: 0.5rem; position: absolute; top: 1.5rem";
+		rootDiv.appendChild(btnContainer);
+		let collapseBtn = document.createElement("div");
+		collapseBtn.id = "collapseZTreeBtn";
+		collapseBtn.innerText = "Collapse All";
+		btnContainer.appendChild(collapseBtn);
+		$("#collapseZTreeBtn").jqxButton({ theme: "metro" });
+		$("#collapseZTreeBtn").on("click", function(event) {
+			tree.expandAll(false);
+		});
+		
+		//create zTree div-container
 		let zTreeDiv = document.createElement("DIV");
 		zTreeDiv.id = "zTreeDiv";
-				
+		zTreeDiv.style = "margin-top: 2.5rem";
+		
 		let packageExplorerTreeUL = document.createElement("UL");
 		packageExplorerTreeUL.id = packageExplorerTreeID;
 		packageExplorerTreeUL.setAttribute("class", "ztree");
