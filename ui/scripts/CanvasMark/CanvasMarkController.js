@@ -9,7 +9,7 @@ var canvasMarkController = (function() {
 	
     var markingColor = "0 1 0";
     
-	//config parameters	
+	//config parameters
 	var controllerConfig = {
 		setCenterOfRotation : false,
 		markingColor: "#008800",
@@ -24,18 +24,18 @@ var canvasMarkController = (function() {
 	//let downActionEventObject;
 	var downActionEventObject;
     
-	function initialize(setupConfig){	
+	function initialize(setupConfig){
 
-		application.transferConfigParams(setupConfig, controllerConfig);	
+		application.transferConfigParams(setupConfig, controllerConfig);
 			
-    }	
+    }
 				
-	function activate(){  
+	function activate(){
 
 		actionController.actions.mouse.key[controllerConfig.selectionMouseKey].down.subscribe(downAction);
 		actionController.actions.mouse.key[controllerConfig.selectionMouseKey].up.subscribe(upAction);
 		actionController.actions.mouse.key[controllerConfig.selectionMouseKey].during.subscribe(duringAction);
-		actionController.actions.mouse.move.subscribe(mouseMove);	
+		actionController.actions.mouse.move.subscribe(mouseMove);
         
         //DUMMY
         actionController.actions.keyboard.key[87].down.subscribe(getViewPoint); "W"
@@ -43,7 +43,7 @@ var canvasMarkController = (function() {
 		//DUMMY
 
 		events.marked.on.subscribe(onEntityMarked);
-		events.marked.off.subscribe(onEntityUnmarked); 
+		events.marked.off.subscribe(onEntityUnmarked);
     }
 		
 	function reset(){
@@ -59,8 +59,8 @@ var canvasMarkController = (function() {
 	function getViewPoint(){
 
 		//get reference of x3dom objects
-		var x3domRuntime = document.getElementById('x3dElement').runtime;		
-		var viewarea = x3domRuntime.canvas.doc._viewarea;	
+		var x3domRuntime = document.getElementById('x3dElement').runtime;
+		var viewarea = x3domRuntime.canvas.doc._viewarea;
 		var viewpoint = viewarea._scene.getViewpoint();
 
 		myViewMatrix = viewarea.getViewMatrix();
@@ -68,15 +68,15 @@ var canvasMarkController = (function() {
 		myCenterRotation = viewpoint.getCenterOfRotation();
 		console.log(myCenterRotation);
 	}
-	function setViewPoint(){	
+	function setViewPoint(){
 		//get reference of x3dom objects
-		var x3domRuntime = document.getElementById('x3dElement').runtime;		
-		var viewarea = x3domRuntime.canvas.doc._viewarea;	
+		var x3domRuntime = document.getElementById('x3dElement').runtime;
+		var viewarea = x3domRuntime.canvas.doc._viewarea;
 		var viewpoint = viewarea._scene.getViewpoint();
 		
-		viewpoint.setView(myViewMatrix)		
+		viewpoint.setView(myViewMatrix)
 		viewarea._needNavigationMatrixUpdate = true;
-		viewpoint.setCenterOfRotation(myCenterRotation);				
+		viewpoint.setCenterOfRotation(myCenterRotation);
 	}
 	//DUMMY
 
@@ -146,19 +146,19 @@ var canvasMarkController = (function() {
 	}
 
 
-	function handleOnClick(eventObject) {            
+	function handleOnClick(eventObject) {
 				
 		//let applicationEvent = {
-        var applicationEvent = { 
+        var applicationEvent = {
 			sender: canvasMarkController,
 			entities: [eventObject.entity]
 		};
 		
 		if(eventObject.entity.marked){
-			events.marked.off.publish(applicationEvent);		
+			events.marked.off.publish(applicationEvent);
 		} else {
-			events.marked.on.publish(applicationEvent);		
-		}	
+			events.marked.on.publish(applicationEvent);
+		}
 
 		//center of rotation
 		if(controllerConfig.setCenterOfRotation){
@@ -201,11 +201,11 @@ var canvasMarkController = (function() {
 
 		let progressBar = $('#progressBarDiv');
 
-		progressBar.jqxProgressBar({ 
-			width: 				250, 
-			height: 			30, 
-			value: 				100, 
-			animationDuration: 	controllerConfig.selectionDurationSeconds * 1000, 
+		progressBar.jqxProgressBar({
+			width: 				250,
+			height: 			30,
+			value: 				100,
+			animationDuration: 	controllerConfig.selectionDurationSeconds * 1000,
 			template: 			"success"
 		});
 
@@ -216,21 +216,21 @@ var canvasMarkController = (function() {
 		progressBar.css("z-index", "1");
 		progressBar.css("position", "absolute");
 
-		progressBar.css("width", "250px");	
-		progressBar.css("height", "30px");	
+		progressBar.css("width", "250px");
+		progressBar.css("height", "30px");
 
 		progressBar.css("display", "block");
 
 	}
 
-	function hideProgressBar(){		
+	function hideProgressBar(){
 		
 		//let progressBarDivElement = document.getElementById("progressBarDiv");
         var progressBarDivElement = document.getElementById("progressBarDiv");
 
 		if(!progressBarDivElement){
 			return;
-		}	
+		}
 
 		//let canvas = document.getElementById("canvas");
         var canvas = document.getElementById("canvas");
@@ -245,5 +245,5 @@ var canvasMarkController = (function() {
 		onEntityMarked		: onEntityMarked,
 		onEntityUnmarked	: onEntityUnmarked,
 		SELECTION_MODES		: SELECTION_MODES
-    };    
+    };
 })();
