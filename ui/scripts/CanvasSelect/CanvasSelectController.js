@@ -15,7 +15,8 @@ var canvasSelectController = (function() {
 		selectionDurationSeconds: 0.5,
 		selectionMoveAllowed: false,
 		showProgressBar: false,
-		highlightMode: false
+		highlightMode: false,
+		colorNamespaces: false
 	};
 
 	var downActionEventObject;
@@ -153,15 +154,16 @@ var canvasSelectController = (function() {
 		if(selectedEntities.has(entity)){
 			return;
 		}
-
-        if(entity.type == "text"){
-            return;
-        }
-
-        if(entity.type == "Namespace"){
-		    return;
-        }
-
+		
+		if(entity.type == "text"){
+			return;
+		}
+		if(!controllerConfig.colorNamespaces) {
+			if(entity.type == "Namespace"){
+				return;
+			}
+		}
+		
 		//unhighlight old selected entities	for single select	
 		if(selectedEntities.size != 0){
 		
