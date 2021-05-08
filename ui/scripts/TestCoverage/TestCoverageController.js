@@ -140,7 +140,26 @@ var testCoverageController = (function() {
 		// Entity name and coverage bar
 		sectionHeading = document.createElement("h3");
 		sectionHeading.innerText = "Selected Entity:";
+		sectionHeading.style = "margin: 1.5rem 0 0 0;";
 		parent.appendChild(sectionHeading);
+		let flyToBtn = document.createElement("button");
+		flyToBtn.id = "testCovFlyTo";
+		flyToBtn.innerText = "Fly to entity";
+		flyToBtn.style = "display: inline-block; margin: 0.5rem 0 -0.5rem 0.5rem";
+		parent.appendChild(flyToBtn);
+		$("#testCovFlyTo").jqxButton({
+			theme: "metro",
+			width: 100,
+			height: 25,
+			textImageRelation: "imageBeforeText",
+			textPosition: "left",
+			imgSrc: "scripts/TestCoverage/fly_to_btn.png"
+		});
+		$("#testCovFlyTo").on("click", function(event) {
+			if(selectedEntity) {
+				canvasManipulator.flyToEntity(selectedEntity);
+			}
+		});
 		container = document.createElement("div");
 		parent.appendChild(container);
 		controllerConfig.ui = true;
