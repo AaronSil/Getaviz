@@ -15,6 +15,7 @@ var canvasSelectController = (function() {
 		selectionDurationSeconds: 0.5,
 		selectionMoveAllowed: false,
 		showProgressBar: false,
+		highlightMode: false
 	};
 
 	var downActionEventObject;
@@ -176,7 +177,11 @@ var canvasSelectController = (function() {
 		}
 		
 		//higlight new selected entity
-		colorController.addColorToEntity(entity, "#880000", "canvasSelectController");
+		if(controllerConfig.highlightMode) {
+			colorController.addHighlightToEntity(entity, controllerConfig.color, "canvasSelectController");
+		} else {
+			colorController.addColorToEntity(entity, controllerConfig.color, "canvasSelectController");
+		}
 		//center of rotation
 		if(controllerConfig.setCenterOfRotation){
 			canvasManipulator.setCenterOfRotation(entity);
@@ -185,7 +190,11 @@ var canvasSelectController = (function() {
 	
 	function onEntityUnselected(applicationEvent){
 		var entity = applicationEvent.entities[0];
-		colorController.removeColorFromEntity(entity, "canvasSelectController");		
+		if(controllerConfig.highlightMode) {
+			colorController.removeHighlightFromEntity(entity, "canvasSelectController");		
+		} else {
+			colorController.removeColorFromEntity(entity, "canvasSelectController");		
+		}
 	}
 
 	function showProgressBar(eventObject){
