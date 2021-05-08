@@ -6,12 +6,12 @@ var canvasSelectController = (function() {
 		DURATION	: "DURATION"
 	};
 
-	//config parameters	
+	//config parameters
 	var controllerConfig = {
 		setCenterOfRotation : false,
 		color: "#880000",
 		selectionMouseKey: 1,
-		selectionMode: SELECTION_MODES.UP,					
+		selectionMode: SELECTION_MODES.UP,
 		selectionDurationSeconds: 0.5,
 		selectionMoveAllowed: false,
 		showProgressBar: false,
@@ -23,18 +23,18 @@ var canvasSelectController = (function() {
 
 	
 	
-	function initialize(setupConfig){	
+	function initialize(setupConfig){
 
-		application.transferConfigParams(setupConfig, controllerConfig);	
+		application.transferConfigParams(setupConfig, controllerConfig);
 			
-    }	
+    }
 	
 	function activate(){
 				
 		actionController.actions.mouse.key[controllerConfig.selectionMouseKey].down.subscribe(downAction);
 		actionController.actions.mouse.key[controllerConfig.selectionMouseKey].up.subscribe(upAction);
 		actionController.actions.mouse.key[controllerConfig.selectionMouseKey].during.subscribe(duringAction);
-		actionController.actions.mouse.move.subscribe(mouseMove);	
+		actionController.actions.mouse.move.subscribe(mouseMove);
 			
 		events.selected.on.subscribe(onEntitySelected);
 		events.selected.off.subscribe(onEntityUnselected);
@@ -57,7 +57,7 @@ var canvasSelectController = (function() {
 	}
 	
 	function reset(){
-		var selectedEntities = events.selected.getEntities();		
+		var selectedEntities = events.selected.getEntities();
 		
 		selectedEntities.forEach(function(selectedEntity){
 			var unselectEvent = {
@@ -65,8 +65,8 @@ var canvasSelectController = (function() {
                 entities: [selectedEntity]
             };
 
-			events.selected.off.publish(unselectEvent);	
-		});		
+			events.selected.off.publish(unselectEvent);
+		});
 	}
 
 	function downAction(eventObject, timestamp){
@@ -118,7 +118,7 @@ var canvasSelectController = (function() {
 		if(timeSinceStart > ( 1000 * controllerConfig.selectionDurationSeconds)){
 			hideProgressBar();
 			handleOnClick(downActionEventObject);
-			downActionEventObject = null;			
+			downActionEventObject = null;
 			return;
 		}
 	}
@@ -134,21 +134,21 @@ var canvasSelectController = (function() {
 		}
 	}
 
-	function handleOnClick(eventObject) {            
+	function handleOnClick(eventObject) {
 				
-		var applicationEvent = {			
+		var applicationEvent = {
 			sender: canvasSelectController,
 			entities: [eventObject.entity]
 		};
 		
-		events.selected.on.publish(applicationEvent);		
+		events.selected.on.publish(applicationEvent);
 	}
 	
-	function onEntitySelected(applicationEvent) {	
+	function onEntitySelected(applicationEvent) {
 		
-		var entity = applicationEvent.entities[0];	
+		var entity = applicationEvent.entities[0];
 		
-		var selectedEntities = events.selected.getEntities();		
+		var selectedEntities = events.selected.getEntities();
 		
 		//select same entity again -> nothing to do
 		if(selectedEntities.has(entity)){
@@ -164,17 +164,17 @@ var canvasSelectController = (function() {
 			}
 		}
 		
-		//unhighlight old selected entities	for single select	
+		//unhighlight old selected entities	for single select
 		if(selectedEntities.size != 0){
 		
 			selectedEntities.forEach(function(selectedEntity){
 								
-				var unselectEvent = {					
+				var unselectEvent = {
 					sender: canvasSelectController,
 					entities: [selectedEntity]
-				}	
+				}
 
-				events.selected.off.publish(unselectEvent);	
+				events.selected.off.publish(unselectEvent);
 			});
 		}
 		
@@ -193,9 +193,9 @@ var canvasSelectController = (function() {
 	function onEntityUnselected(applicationEvent){
 		var entity = applicationEvent.entities[0];
 		if(controllerConfig.highlightMode) {
-			colorController.removeHighlightFromEntity(entity, "canvasSelectController");		
+			colorController.removeHighlightFromEntity(entity, "canvasSelectController");
 		} else {
-			colorController.removeColorFromEntity(entity, "canvasSelectController");		
+			colorController.removeColorFromEntity(entity, "canvasSelectController");
 		}
 	}
 
@@ -210,11 +210,11 @@ var canvasSelectController = (function() {
 
 		var progressBar = $("#progressBarDiv");
 
-		progressBar.jqxProgressBar({ 
-			width: 				250, 
-			height: 			30, 
-			value: 				100, 
-			animationDuration: 	controllerConfig.selectionDurationSeconds * 1000, 
+		progressBar.jqxProgressBar({
+			width: 				250,
+			height: 			30,
+			value: 				100,
+			animationDuration: 	controllerConfig.selectionDurationSeconds * 1000,
 			template: 			"danger"
 		});
 
@@ -225,22 +225,22 @@ var canvasSelectController = (function() {
 		progressBar.css("z-index", "1");
 		progressBar.css("position", "absolute");
 
-		progressBar.css("width", "250px");	
-		progressBar.css("height", "30px");	
+		progressBar.css("width", "250px");
+		progressBar.css("height", "30px");
 
 		progressBar.css("display", "block");
 
 	}
 
-	function hideProgressBar(){		
+	function hideProgressBar(){
 		
 		var progressBarDivElement = document.getElementById("progressBarDiv");
 
 		if(!progressBarDivElement){
 			return;
-		}	
+		}
 
-		var canvas = document.getElementById("canvas");		
+		var canvas = document.getElementById("canvas");
 		canvas.removeChild(progressBarDivElement);
 	}
 	
@@ -250,6 +250,6 @@ var canvasSelectController = (function() {
 		reset				: reset,
 		activate			: activate,
 		SELECTION_MODES		: SELECTION_MODES
-    };    
+    };
 })();
 
