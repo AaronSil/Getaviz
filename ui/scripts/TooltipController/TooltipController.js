@@ -1,12 +1,14 @@
 var tooltipController = (function() {
 	
 	var tooltipContainer;
+	var registeredDivs = [];
 	
 	var controllerConfig = {
 		activated: true,
 		
 		qualifiedName: false,
-		belongsTo: false
+		belongsTo: false,
+		displayRegisteredDivs: true
 	};
 	
 	function initialize(setupConfig) {
@@ -91,11 +93,33 @@ var tooltipController = (function() {
 			} else {
 				$("#tooltipParentName").parent().css("display", "none");
 			}
+			
+			registeredDivs.forEach(function(el) {
+				let div = el.callback.apply(document, [el.element, applicationEvent]);
+			});
 		}
 	}
 	
 	function onEntityUnhover(applicationEvent) {
 			$("#"+tooltipDiv.id).css("display", "none");
+	}
+	
+	function register(callback) {
+		let registeredDiv = document.createElement("div");
+		$("#"+tooltipContainer.id).append(registeredDiv);
+		registeredDivs.push({
+			callback: callback,
+			element:  registeredDiv
+		});
+	}
+	
+	function unregister(callback) {
+		let index = registeredDiv.findIndex(function(el) {
+			return el.callback == callback;
+		});
+		tooltipContainer.removeChild(registeredDivs[index].element)
+		let rmEl = registeredDivs.splice(index, 1);
+		console.debug("Removed element at "+index+". New length = "+registeredDivs.length);
 	}
 	
 	function toggleController() {
@@ -105,6 +129,9 @@ var tooltipController = (function() {
 	return {
 		initialize: initialize,
 		
-		toggleController: toggleController
+		toggleController: toggleController,
+		
+		register: register,
+		unregister: unregister
 	};
 })();
