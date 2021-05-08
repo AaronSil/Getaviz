@@ -13,7 +13,7 @@ var testCoverageController = (function() {
 		{ start: 1.0, color: "#77ff33" }
 	];
 	
-	// coverage types should be defined dynamically to ensure compatibility with 
+	// coverage types should be defined dynamically to ensure compatibility with
 	let coverageType = {
 		STATEMENT: "statementCoverage",
 		BRANCH: "branchCoverage",
@@ -28,7 +28,7 @@ var testCoverageController = (function() {
 		SPHERES: "SPHERES"
 	};
 	
-	//config parameters	
+	//config parameters
 	var controllerConfig = {
 		coverageType: coverageType.LINE,
 		lowerThreshold: 0,
@@ -536,9 +536,9 @@ var testCoverageController = (function() {
 		document.getElementById("entityNameLabel").innerText = name;
 		document.getElementById("belongsToLabel").innerText = selectedEntity.belongsTo.qualifiedName;
 		if(selectedEntity.type == "Namespace") {
-			document.getElementById("coverageOfLabel").innerText = "Package coverage:"; 
+			document.getElementById("coverageOfLabel").innerText = "Package coverage:";
 		} else {
-			document.getElementById("coverageOfLabel").innerText = "Class coverage:"; 
+			document.getElementById("coverageOfLabel").innerText = "Class coverage:";
 		}
 	}
 	
