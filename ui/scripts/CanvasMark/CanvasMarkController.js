@@ -18,6 +18,7 @@ var canvasMarkController = (function() {
 		selectionDurationSeconds: 0.5,
 		selectionMoveAllowed: false,
 		showProgressBar: false,
+		highlightMode: false
 	}
 
 	//let downActionEventObject;
@@ -171,13 +172,21 @@ var canvasMarkController = (function() {
 
 	function onEntityMarked(applicationEvent) {
 		applicationEvent.entities.forEach( function (entity) {
-			colorController.addColorToEntity(entity, controllerConfig.markingColor, "canvasMarkController");
+			if(controllerConfig.highlightMode) {
+				colorController.addHighlightToEntity(entity, controllerConfig.markingColor, "canvasMarkController");
+			} else {
+				colorController.addColorToEntity(entity, controllerConfig.markingColor, "canvasMarkController");
+			}
 		});
 	}
 
 	function onEntityUnmarked(applicationEvent) {
 		applicationEvent.entities.forEach( function (entity) {
-			colorController.removeColorFromEntity(entity, "canvasMarkController");
+			if(controllerConfig.highlightMode) {
+				colorController.removeHighlightFromEntity(entity, "canvasMarkController");
+			} else {
+				colorController.removeColorFromEntity(entity, "canvasMarkController");
+			}
 		});
 	}
 
