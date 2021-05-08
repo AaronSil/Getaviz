@@ -168,6 +168,7 @@ EOT;
 <link rel="stylesheet" href="scripts/SourceCode/jacoco.css" type="text/css">
 <script type="text/javascript" src="scripts/TestCoverage/TestCoverageController.js"></script>
 <link rel="stylesheet" href="scripts/TestCoverage/testCoverageStyle.css" type="text/css">
+<script type="text/javascript" src="scripts/TooltipController/TooltipController.js"></script>
 <script type="text/javascript" src="scripts/InteractionLogger/InteractionLogger.js"></script>
 <script type="text/javascript" src="scripts/Email/EmailController.js"></script>
 <script type="text/javascript" src="scripts/GenerationForm/GenerationFormController.js"></script>

@@ -1,0 +1,34 @@
+#tooltipDiv {
+	display: none;
+	z-index: 1;
+	position: absolute;
+	padding: 0.25rem 0.5rem;
+	background-color: #FFFFFF;
+	color: #767676;
+	opacity: 0.9;
+	border: solid thin #17a0fa;
+	-moz-box-shadow: 0 0 2.5px #17a0fa;
+	-webkit-box-shadow: 0 0 2.5px #17a0fa;
+	box-shadow: 0 0 2.5px #767676;
+	min-width: 18rem;
+}
+
+#tooltipDiv .modularDiv {
+	width: 100%;
+	display: inline-block;
+}
+
+#tooltipDiv p {
+	font-size: 0.75rem;
+	margin: 0;
+}
+
+.tooltipLeft {
+	float: left;
+	margin-right: 0.5rem;
+}
+
+.tooltipRight {
+	float: right;
+	margin-left: 0.5rem;
+}

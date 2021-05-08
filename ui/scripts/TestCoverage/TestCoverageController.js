@@ -3,6 +3,7 @@ var testCoverageController = (function() {
 	var effects = [];
 	var selectedEntity;
 	var coverageBars = [];
+	var tooltipCovBars = [];
 	
 	var treeMapData = [];
 	
@@ -12,7 +13,7 @@ var testCoverageController = (function() {
 		{ start: 1.0, color: "#77ff33" }
 	];
 	
-	// coverage types should be defined dynamically to ensure compatibility with 
+	// coverage types should be defined dynamically to ensure compatibility with
 	let coverageType = {
 		STATEMENT: "statementCoverage",
 		BRANCH: "branchCoverage",
@@ -27,7 +28,7 @@ var testCoverageController = (function() {
 		SPHERES: "SPHERES"
 	};
 	
-	//config parameters	
+	//config parameters
 	var controllerConfig = {
 		coverageType: coverageType.LINE,
 		lowerThreshold: 0,
@@ -44,7 +45,8 @@ var testCoverageController = (function() {
 		spheresCheckboxes: false,
 		classSpheres: false,
 		packageSpheres: false,
-		showInExplorer: true
+		showInExplorer: true,
+		showInTooltip: true
 	};
 	
 	
@@ -60,6 +62,10 @@ var testCoverageController = (function() {
 		createUI(parent);
 		reapplyColors();
 		colorExplorerDivs();
+		
+		if(controllerConfig.showInTooltip) {
+			tooltipController.register(modifyTooltip);
+		}
 	}
 	
 	function createUI(parent) {
@@ -530,9 +536,9 @@ var testCoverageController = (function() {
 		document.getElementById("entityNameLabel").innerText = name;
 		document.getElementById("belongsToLabel").innerText = selectedEntity.belongsTo.qualifiedName;
 		if(selectedEntity.type == "Namespace") {
-			document.getElementById("coverageOfLabel").innerText = "Package coverage:"; 
+			document.getElementById("coverageOfLabel").innerText = "Package coverage:";
 		} else {
-			document.getElementById("coverageOfLabel").innerText = "Class coverage:"; 
+			document.getElementById("coverageOfLabel").innerText = "Class coverage:";
 		}
 	}
 	
@@ -628,6 +634,54 @@ var testCoverageController = (function() {
 	function reset() {
 		reapplyColors();
 		colorExplorerDivs();
+	}
+	
+	function modifyTooltip(div, applicationEvent) {
+		// use parent if hovered entity is not a class or package
+		let entity = applicationEvent.entities[0];
+		let entityWithCoverage = entity;
+		if(entityWithCoverage.type != "Class" && entityWithCoverage.type != "Namespace") {
+			entityWithCoverage = entity.belongsTo;
+		}
+		
+		// create bars if not already happened
+		if(tooltipCovBars.length == 0) {
+			Object.values(coverageType).forEach(function(type) {
+				let innerContainer = document.createElement("div");
+				innerContainer.style = "margin: 0.25rem 0;"
+				div.appendChild(innerContainer);
+				let coverageTypeLabel = document.createElement("p");
+				coverageTypeLabel.innerText = type+":";
+				coverageTypeLabel.classList += "tooltipLeft";
+				coverageTypeLabel.style = "display: inline-block;";
+				div.appendChild(coverageTypeLabel);
+				let elementCoverageBar = document.createElement("div");
+				elementCoverageBar.id = "tt_" + type + "Bar";
+				elementCoverageBar.classList += "tooltipRight";
+				innerContainer.appendChild(elementCoverageBar);
+				let progressBar = $("#tt_"+type+"Bar").jqxProgressBar({
+					width: "50%",
+					height: "0.75rem",
+					showText: true
+				});
+				tooltipCovBars.push(progressBar);
+				div.appendChild(document.createElement("br"));
+			});
+		}
+		
+		// update bars
+		Object.values(tooltipCovBars).forEach(function(bar) {
+			let type = bar[0].id.replace("Bar", "");
+			type = type.replace("tt_", "");
+			if(entityWithCoverage.testCoverage[type] !== undefined) {
+				let color = calculateColor(entityWithCoverage.testCoverage[type]);
+				let hexString = rgbToHex(color);
+				let colorRanges = [ { stop: 100, color: hexString } ];
+				$("#tt_"+type+"Bar").jqxProgressBar({value: parseInt(100 * entityWithCoverage.testCoverage[type]), colorRanges: colorRanges, disabled: false});
+			} else {
+				$("#"+type+"Bar").jqxProgressBar({disabled: true});
+			}
+		});
 	}
 	
 	return {
