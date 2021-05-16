@@ -163,6 +163,13 @@ var experimentController = (function() {
 			nextStep();
 		}
 		logResult(currentStep.text);
+		
+		// Unmark all marked entties.
+		const unmarkEvent = {
+			sender: experimentController,
+			entities: events.marked.getEntities()
+		};
+		events.marked.off.publish(unmarkEvent);
 	}
 	
 	function backButtonClick(event) {
