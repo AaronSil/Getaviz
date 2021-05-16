@@ -3,6 +3,8 @@ var tooltipController = (function() {
 	var tooltipContainer;
 	var registeredDivs = [];
 	
+	var domRect;
+	
 	var controllerConfig = {
 		activated: true,
 		
@@ -66,9 +68,11 @@ var tooltipController = (function() {
 		if(controllerConfig.activated) {
 			let entity = applicationEvent.entities[0];
 			
+			if(domRect == undefined) {
+				domRect = AFRAME.scenes[0].getBoundingClientRect();
+			}
+			
 			let tooltip = $("#tooltipDiv");
-			tooltip.css("top", applicationEvent.posY + 50 + "px");
-			tooltip.css("left", applicationEvent.posX + 50 +  "px");
 			tooltip.css("display", "block");
 			
 			if(controllerConfig.qualifiedName) {
@@ -97,6 +101,11 @@ var tooltipController = (function() {
 			registeredDivs.forEach(function(el) {
 				let div = el.callback.apply(document, [el.element, applicationEvent]);
 			});
+			
+			let posX = Math.min(domRect.right - 600, applicationEvent.posX + 50);
+			let posY = Math.min(domRect.bottom - 250, applicationEvent.posY + 50);
+			tooltip.css("top", posY + "px");
+			tooltip.css("left", posX +  "px");
 		}
 	}
 	
