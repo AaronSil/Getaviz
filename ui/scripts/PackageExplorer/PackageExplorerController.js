@@ -13,7 +13,7 @@ var packageExplorerController = (function() {
 		typeIcon:    "scripts/PackageExplorer/images/type_icon.png",
 		fieldIcon:   "scripts/PackageExplorer/images/field_icon.png",
 		methodIcon:  "scripts/PackageExplorer/images/method_icon.png",
-		codeCoverage: true,
+		codeCoverage: false,
 		codeCovImg:  "scripts/PackageExplorer/images/colorable_shield.png",
 		elementsSelectable: true
 	};

@@ -159,6 +159,7 @@
 		
 		{
 			name: "packageExplorerController",
+			codeCoverage: true
 		},
 		
 		{
