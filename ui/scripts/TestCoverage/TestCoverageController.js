@@ -658,6 +658,9 @@ var testCoverageController = (function() {
 	function modifyTooltip(div, applicationEvent) {
 		// use parent if hovered entity is not a class or package
 		let entity = applicationEvent.entities[0];
+		if(entity == undefined) {
+			return;
+		}
 		let entityWithCoverage = entity;
 		if(entityWithCoverage.type != "Class" && entityWithCoverage.type != "Namespace") {
 			entityWithCoverage = entity.belongsTo;
