@@ -15,8 +15,8 @@ var canvasSelectController = (function() {
 		selectionDurationSeconds: 0.5,
 		selectionMoveAllowed: false,
 		showProgressBar: false,
-		highlightMode: false,
-		colorNamespaces: false
+		highlightMode: true,
+		colorNamespaces: true
 	};
 
 	var downActionEventObject;

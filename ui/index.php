@@ -16,13 +16,13 @@ if (isset($_GET["setup"])) {
     $setupUrl = "setups/" . $_GET["setup"] . ".js";
 }
 
-$modelUrl = "data/JUnit4_collidable/model";
+$modelUrl = "data/City/model";
 
 if (isset($_GET["model"])) {
     $modelUrl = $srcDir . "/" . $_GET["model"] . "/model";
 } else {
     if (!isset($_GET["setup"])) {
-        $setupUrl = "setups/test/testCoverage.js";
+        $setupUrl = "setups/web/City bank.js";
     }
 }
 
