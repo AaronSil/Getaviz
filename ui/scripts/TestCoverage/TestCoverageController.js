@@ -30,7 +30,7 @@ var testCoverageController = (function() {
 	
 	//config parameters
 	var controllerConfig = {
-		coverageType: coverageType.LINE,
+		coverageType: coverageType.STATEMENT,
 		lowerThreshold: 0,
 		upperThreshold: 80,
 		visualization: visualization.COLOR_CODE,
